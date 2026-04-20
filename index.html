@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<title>Arty Party 🎨</title>
+<meta name="description" content="Summer holiday art & craft adventures for kids!"/>
+<meta name="theme-color" content="#FF6B9D"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="Arty Party"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{background:#f0f4ff;font-family:'Nunito',sans-serif;display:flex;justify-content:center;align-items:flex-start;min-height:100vh;overflow:hidden;}
+#root{width:100%;max-width:430px;height:100vh;position:relative;overflow:hidden;background:#fff;box-shadow:0 0 40px rgba(0,0,0,.15);}
+.scr{animation:fadeUp .22s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.np{display:none;}
+@media print{.np{display:none!important;}}
+::-webkit-scrollbar{display:none;}
+*{scrollbar-width:none;}
+@keyframes bounce{0%,80%,100%{transform:translateY(0);}40%{transform:translateY(-7px);}}
+@keyframes pop{0%{transform:scale(.8);opacity:0;}100%{transform:scale(1);opacity:1;}}
+@keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const {useState,useRef,useEffect,useMemo,useCallback}=React;
+
+// ═══════════════════════════════════════════════════
+// COLOUR ZONE DATA
+// ═══════════════════════════════════════════════════
+const COLOR_CATS=[
+{id:"movie",label:"Movie Characters",emoji:"🎬",color:"#FF4757",bg:"#FFE4EF",desc:"Disney, Marvel, Miraculous & more!",subjects:[
+{id:"m1",name:"Sparkle",from:"Unicorn Academy",emoji:"🦄"},{id:"m2",name:"Ladybug",from:"Miraculous",emoji:"🐞"},
+{id:"m3",name:"Cat Noir",from:"Miraculous",emoji:"🐈"},{id:"m4",name:"Marinette",from:"Miraculous",emoji:"💙"},
+{id:"m5",name:"Luna",from:"K-Pop Demon Hunters",emoji:"🌙"},{id:"m6",name:"Stella",from:"K-Pop Demon Hunters",emoji:"⭐"},
+{id:"m7",name:"Nova",from:"K-Pop Demon Hunters",emoji:"💫"},{id:"m8",name:"Lyra",from:"K-Pop Demon Hunters",emoji:"🎵"},
+{id:"m9",name:"Elsa",from:"Frozen",emoji:"❄️"},{id:"m10",name:"Moana",from:"Disney",emoji:"🌺"},
+{id:"m11",name:"Ariel",from:"Disney",emoji:"🧜"},{id:"m12",name:"Belle",from:"Disney",emoji:"🌹"},
+{id:"m13",name:"Cinderella",from:"Disney",emoji:"👸"},{id:"m14",name:"Spider-Kid",from:"Marvel Jr",emoji:"🕷️"},
+{id:"m15",name:"Iron Kid",from:"Marvel Jr",emoji:"🦾"},{id:"m16",name:"Thor Jr",from:"Marvel Jr",emoji:"⚡"},
+{id:"m17",name:"Draco",from:"Dragon Riders",emoji:"🐉"},{id:"m18",name:"Marina",from:"Mermaid Tales",emoji:"🧜"},
+{id:"m19",name:"Princess Zara",from:"Enchanted Kingdom",emoji:"👑"},{id:"m20",name:"Flutter",from:"Enchanted Wings",emoji:"🦋"}
+]},
+{id:"animals",label:"Animals",emoji:"🐾",color:"#FF8C42",bg:"#FFF3E0",desc:"Cute pets, wild animals and funny critters!",subjects:[
+{id:"a1",name:"Whiskers",from:"Cat World",emoji:"🐱"},{id:"a2",name:"Buddy",from:"Dog World",emoji:"🐶"},
+{id:"a3",name:"Hoppy",from:"Frog Pond",emoji:"🐸"},{id:"a4",name:"Ollie",from:"Night Forest",emoji:"🦉"},
+{id:"a5",name:"Rex",from:"Dino Land",emoji:"🦕"},{id:"a6",name:"Flopsy",from:"Bunny Meadow",emoji:"🐰"},
+{id:"a7",name:"Rusty",from:"Fox Hills",emoji:"🦊"},{id:"a8",name:"Stripes",from:"Jungle",emoji:"🐯"},
+{id:"a9",name:"Dumbo",from:"Safari",emoji:"🐘"},{id:"a10",name:"Spotty",from:"Farm",emoji:"🐮"},
+{id:"a11",name:"Goldie",from:"Ocean",emoji:"🐟"},{id:"a12",name:"Pip",from:"Hamster Wheel",emoji:"🐹"},
+{id:"a13",name:"Leo",from:"Savannah",emoji:"🦁"},{id:"a14",name:"Polly",from:"Tropical Island",emoji:"🦜"},
+{id:"a15",name:"Shelby",from:"Lagoon",emoji:"🐢"},{id:"a16",name:"Cleo",from:"Horse Ranch",emoji:"🐴"},
+{id:"a17",name:"Baloo",from:"Bear Woods",emoji:"🐻"},{id:"a18",name:"Ziggy",from:"Grasslands",emoji:"🦓"},
+{id:"a19",name:"Bubbles",from:"Reef",emoji:"🐠"},{id:"a20",name:"Snowy",from:"Arctic",emoji:"🐧"}
+]},
+{id:"nature",label:"Nature & Plants",emoji:"🌸",color:"#4ADE80",bg:"#E8F5E9",desc:"Gardens, rainbows, weather and magical plants!",subjects:[
+{id:"n1",name:"Daisy",from:"Garden",emoji:"🌸"},{id:"n2",name:"Sunny",from:"Sky",emoji:"☀️"},
+{id:"n3",name:"Flutter",from:"Meadow",emoji:"🦋"},{id:"n4",name:"Oakie",from:"Forest",emoji:"🌳"},
+{id:"n5",name:"Rainy",from:"Sky",emoji:"🌈"},{id:"n6",name:"Shroomy",from:"Forest Floor",emoji:"🍄"},
+{id:"n7",name:"Rosie",from:"Rose Garden",emoji:"🌹"},{id:"n8",name:"Twiggy",from:"Woodland",emoji:"🌿"},
+{id:"n9",name:"Poppy",from:"Wildflowers",emoji:"🌺"},{id:"n10",name:"Cactus Carl",from:"Desert",emoji:"🌵"},
+{id:"n11",name:"Sunflower Sam",from:"Summer Field",emoji:"🌻"},{id:"n12",name:"Bluebell",from:"Springtime",emoji:"🔔"},
+{id:"n13",name:"Snowflake",from:"Winter",emoji:"❄️"},{id:"n14",name:"Raindrop",from:"Storm",emoji:"🌧️"},
+{id:"n15",name:"Sandy",from:"Seaside",emoji:"🏖️"},{id:"n16",name:"Mossy",from:"River Bank",emoji:"🌊"},
+{id:"n17",name:"Crystal",from:"Ice Caves",emoji:"💎"},{id:"n18",name:"Acorn",from:"Autumn",emoji:"🍂"},
+{id:"n19",name:"Petal",from:"Cherry Tree",emoji:"🌸"},{id:"n20",name:"Vine",from:"Jungle",emoji:"🍃"}
+]},
+{id:"cartoons",label:"Cartoons",emoji:"🤩",color:"#00B4D8",bg:"#E3F2FD",desc:"Wacky cartoon characters to bring to life!",subjects:[
+{id:"c1",name:"Beep-Boop",from:"Robot World",emoji:"🤖"},{id:"c2",name:"Kitti",from:"Cartoon Cats",emoji:"🐱"},
+{id:"c3",name:"Roary",from:"Dragon Tales",emoji:"🐉"},{id:"c4",name:"Froggo",from:"Pond Pals",emoji:"🐸"},
+{id:"c5",name:"StarBoy",from:"Galaxy Toons",emoji:"🌟"},{id:"c6",name:"Zippy",from:"Race Track",emoji:"🏎️"},
+{id:"c7",name:"Buzzy",from:"Bee Hive",emoji:"🐝"},{id:"c8",name:"Zap",from:"Electric City",emoji:"⚡"},
+{id:"c9",name:"Wobbly",from:"Jelly Town",emoji:"🍮"},{id:"c10",name:"Pixel",from:"Game World",emoji:"🕹️"},
+{id:"c11",name:"Captain Coral",from:"Ocean Toons",emoji:"🌊"},{id:"c12",name:"Thunder Duck",from:"Storm Squad",emoji:"🦆"},
+{id:"c13",name:"Mega Mouse",from:"City Toons",emoji:"🐭"},{id:"c14",name:"Disco Dave",from:"Groove Gang",emoji:"🕺"},
+{id:"c15",name:"Rainbow Rick",from:"Colour Squad",emoji:"🌈"},{id:"c16",name:"Noodle",from:"Food Toons",emoji:"🍜"},
+{id:"c17",name:"Comet",from:"Space Squad",emoji:"☄️"},{id:"c18",name:"Snappy",from:"Snap City",emoji:"🦀"},
+{id:"c19",name:"Boo",from:"Ghost Gang",emoji:"👻"},{id:"c20",name:"Twirl",from:"Dance World",emoji:"💃"}
+]},
+{id:"fairies",label:"Fairies & Magic",emoji:"🧚",color:"#C084FC",bg:"#F3E5F5",desc:"Enchanted beings from magical realms!",subjects:[
+{id:"f1",name:"Petal",from:"Fairy Forest",emoji:"🧚"},{id:"f2",name:"Marina",from:"Ocean Magic",emoji:"🧜"},
+{id:"f3",name:"Stardust",from:"Magic Realm",emoji:"🦄"},{id:"f4",name:"Merlin Jr",from:"Spell Academy",emoji:"🧙"},
+{id:"f5",name:"Glitter",from:"Fairy Glen",emoji:"✨"},{id:"f6",name:"Dewdrop",from:"Morning Mist",emoji:"💧"},
+{id:"f7",name:"Moonbeam",from:"Night Forest",emoji:"🌙"},{id:"f8",name:"Crystalwing",from:"Crystal Caves",emoji:"💎"},
+{id:"f9",name:"Sunpetal",from:"Golden Meadow",emoji:"🌻"},{id:"f10",name:"Frostbloom",from:"Winter Realm",emoji:"❄️"},
+{id:"f11",name:"Shadowdance",from:"Twilight",emoji:"🌅"},{id:"f12",name:"Willowisp",from:"Enchanted Bog",emoji:"🌿"},
+{id:"f13",name:"Goldleaf",from:"Autumn Magic",emoji:"🍂"},{id:"f14",name:"Starweaver",from:"Constellation",emoji:"⭐"},
+{id:"f15",name:"Nightbloom",from:"Moonlit Garden",emoji:"🌸"},{id:"f16",name:"Fizzbolt",from:"Storm Magic",emoji:"⚡"},
+{id:"f17",name:"Coralwing",from:"Sea Fairies",emoji:"🪸"},{id:"f18",name:"Foxfire",from:"Fox Glen",emoji:"🦊"},
+{id:"f19",name:"Bramblethorn",from:"Wild Magic",emoji:"🌹"},{id:"f20",name:"Mistybell",from:"Cloud Kingdom",emoji:"☁️"}
+]},
+{id:"vehicles",label:"Cars, Bikes & Rockets",emoji:"🚀",color:"#F59E0B",bg:"#FFF8E1",desc:"Zooming, soaring and blasting off!",subjects:[
+{id:"v1",name:"Blastoff",from:"Space Race",emoji:"🚀"},{id:"v2",name:"Speedy",from:"Race Circuit",emoji:"🏎️"},
+{id:"v3",name:"Chugger",from:"Railways",emoji:"🚂"},{id:"v4",name:"Whirly",from:"Sky Patrol",emoji:"🚁"},
+{id:"v5",name:"Zoomie",from:"Bike Trails",emoji:"🚴"},{id:"v6",name:"Boomer",from:"Monster Trucks",emoji:"🚛"},
+{id:"v7",name:"Floaty",from:"Sky Adventures",emoji:"🎈"},{id:"v8",name:"Deepdive",from:"Ocean Explore",emoji:"🚢"},
+{id:"v9",name:"Skyjet",from:"Airforce",emoji:"✈️"},{id:"v10",name:"Sparky",from:"Electric City",emoji:"🚗"},
+{id:"v11",name:"Titan",from:"Construction",emoji:"🚜"},{id:"v12",name:"Zigzag",from:"Motorbike",emoji:"🏍️"},
+{id:"v13",name:"Swoop",from:"Hang Gliding",emoji:"🪂"},{id:"v14",name:"Icy",from:"Ice Cream Route",emoji:"🍦"},
+{id:"v15",name:"Comet",from:"Space Shuttle",emoji:"🛸"},{id:"v16",name:"Rusty",from:"Old Town",emoji:"🛺"},
+{id:"v17",name:"Puffin",from:"Steam Age",emoji:"🚂"},{id:"v18",name:"Aqua",from:"Speedboat",emoji:"⛵"},
+{id:"v19",name:"Luna",from:"Moonbuggy",emoji:"🌙"},{id:"v20",name:"Firefly",from:"Night Flights",emoji:"🛩️"}
+]},
+{id:"food",label:"Yummy Food",emoji:"🍕",color:"#F97316",bg:"#FFF0E0",desc:"Delicious food characters hungry for colour!",subjects:[
+{id:"fo1",name:"Scoops",from:"Ice Cream Land",emoji:"🍦"},{id:"fo2",name:"Slice",from:"Pizza Planet",emoji:"🍕"},
+{id:"fo3",name:"Sprinkles",from:"Cupcake City",emoji:"🧁"},{id:"fo4",name:"Juicy",from:"Fruit Kingdom",emoji:"🍉"},
+{id:"fo5",name:"Chip",from:"Cookie Land",emoji:"🍪"},{id:"fo6",name:"Bun",from:"Burger Town",emoji:"🍔"},
+{id:"fo7",name:"Taco Terry",from:"Taco Trail",emoji:"🌮"},{id:"fo8",name:"Waffles",from:"Breakfast World",emoji:"🧇"},
+{id:"fo9",name:"Sunny Side",from:"Egg Farm",emoji:"🍳"},{id:"fo10",name:"Mochi",from:"Japan Town",emoji:"🍡"},
+{id:"fo11",name:"Boba",from:"Tea Shop",emoji:"🧋"},{id:"fo12",name:"Pretzel Pete",from:"Fair Ground",emoji:"🥨"},
+{id:"fo13",name:"Gummy Bear",from:"Candy Land",emoji:"🐻"},{id:"fo14",name:"Lollipop Lucy",from:"Sweet Street",emoji:"🍭"},
+{id:"fo15",name:"Donut Dan",from:"Bakery",emoji:"🍩"},{id:"fo16",name:"Pancake Pete",from:"Brunch Club",emoji:"🥞"},
+{id:"fo17",name:"Sushi Sam",from:"Tokyo Bites",emoji:"🍣"},{id:"fo18",name:"Ramen Rita",from:"Noodle House",emoji:"🍜"},
+{id:"fo19",name:"Popcorn Pop",from:"Cinema Snacks",emoji:"🍿"},{id:"fo20",name:"Hot Dog Hank",from:"Street Food",emoji:"🌭"}
+]},
+{id:"space",label:"Outer Space",emoji:"🌙",color:"#7C3AED",bg:"#EDE9FE",desc:"Planets, stars and space explorers!",subjects:[
+{id:"sp1",name:"Ringy",from:"Saturn",emoji:"🪐"},{id:"sp2",name:"Luna",from:"Moon Base",emoji:"🌙"},
+{id:"sp3",name:"Twinkle",from:"Star Cluster",emoji:"⭐"},{id:"sp4",name:"Xo",from:"Alien World",emoji:"👽"},
+{id:"sp5",name:"Cosmo",from:"Milky Way",emoji:"🌌"},{id:"sp6",name:"Comet Chase",from:"Deep Space",emoji:"☄️"},
+{id:"sp7",name:"Nebula",from:"Gas Cloud",emoji:"🌫️"},{id:"sp8",name:"Pulsar",from:"Neutron Star",emoji:"💫"},
+{id:"sp9",name:"Orion Jr",from:"Constellation",emoji:"⚡"},{id:"sp10",name:"Andromeda",from:"Galaxy Far Away",emoji:"✨"},
+{id:"sp11",name:"Supernova",from:"Dying Star",emoji:"💥"},{id:"sp12",name:"Meteor Mike",from:"Asteroid Belt",emoji:"🪨"},
+{id:"sp13",name:"Titan",from:"Saturn Moon",emoji:"🌕"},{id:"sp14",name:"Europa",from:"Jupiter Moon",emoji:"🌊"},
+{id:"sp15",name:"Pluto Pup",from:"Dwarf Planet",emoji:"🐾"},{id:"sp16",name:"Dark Matter Dave",from:"Unknown",emoji:"🌑"},
+{id:"sp17",name:"Quasar",from:"Black Hole Edge",emoji:"🔆"},{id:"sp18",name:"Red Dwarf",from:"Old Star",emoji:"🔴"},
+{id:"sp19",name:"Cosmic Kit",from:"Space Station",emoji:"🛸"},{id:"sp20",name:"Voyager",from:"Interstellar",emoji:"🚀"}
+]}
+];
+
+// ═══════════════════════════════════════════════════
+// CRAFTS DATA
+// ═══════════════════════════════════════════════════
+const C=(id,tab,name,emoji,diff,time,likes,outEmoji,outDesc,bg,materials,steps)=>({id,tab,name,emoji,diff,time,likes,outEmoji,outDesc,bg,materials,steps});
+const CRAFTS=[
+C(1,"diy","Kawaii Paper Bag","🎒",14,"20 min","2,520","🎒","An adorable kawaii-style paper gift bag","#FFE4EF",["Coloured paper","Scissors","Glue","Ribbon","Markers"],["Cut paper to 30x40cm","Fold sides in 3cm each","Fold bottom 5cm and glue","Punch two holes at top","Thread ribbon for handles","Draw kawaii face on front"]),
+C(2,"diy","Milk Box Panda","🐼",32,"30 min","3,268","🐼","A cute panda from a recycled milk box","#E8F5E9",["Empty milk box","White & black paint","Googly eyes","Glue","Scissors"],["Clean and dry milk box","Paint entire box white","Add black patches for eyes, ears, arms","Glue on googly eyes","Draw nose and smile","Let dry completely"]),
+C(3,"diy","Rainbow Windsock","🌈",10,"15 min","1,890","🌈","A colourful windsock that spins in the breeze","#E3F2FD",["Paper tube","Tissue paper strips","String","Tape","Markers"],["Decorate paper tube with markers","Cut tissue paper into long strips","Tape strips inside one end of tube","Punch 3 holes at other end","Tie string through holes","Hang outside to spin"]),
+C(4,"diy","Paper Flower Bouquet","💐",28,"25 min","3,100","💐","A beautiful bouquet of paper flowers","#FCE4EC",["Coloured paper","Green straws","Tape","Scissors","Glue"],["Cut circles in different sizes","Fold circles into petals","Stack and glue petals together","Insert straw as stem","Tape to secure","Arrange into bouquet"]),
+C(5,"diy","DIY Jewellery Set","💍",8,"10 min","2,100","💍","A sparkly bracelet and necklace set","#FFF3E0",["Beads","Elastic cord","Scissors","Clasps (optional)"],["Cut elastic to wrist length plus 5cm","String beads in your pattern","Tie ends together tightly","Make matching necklace longer","Add clasp if desired","Wear your creation"]),
+C(6,"diy","Paper House Diorama","🏡",58,"45 min","1,720","🏡","A mini house scene in a shoebox","#E3F2FD",["Shoebox","Coloured paper","Glue","Scissors","Markers","Cotton wool"],["Cut box to show inside","Paint or paper the walls","Make tiny furniture from card","Create a garden outside","Add cotton wool clouds","Decorate with tiny details"]),
+C(7,"diy","Paper Puppet Theater","🎭",45,"35 min","2,400","🎭","A stage for your paper puppet shows","#FFF8E1",["Cardboard box","Coloured paper","Glue","Scissors","Markers","Sticks"],["Cut window in front of box","Decorate outside as theater","Make stick puppets from card","Paint backdrop inside","Create curtains from paper","Put on a show"]),
+C(8,"diy","Cardboard Castle","🏰",65,"60 min","1,580","🏰","An epic castle with towers and drawbridge","#F3E5F5",["Large cardboard box","Smaller boxes","Tape","Paint","Scissors","Tinfoil"],["Cut battlements along top edges","Make towers from smaller boxes","Tape towers to main castle","Cut out door and windows","Paint grey or stone colour","Add tinfoil for windows"]),
+C(9,"diy","Recycled Bottle Vase","🌷",20,"20 min","1,960","🌷","A pretty vase from an old plastic bottle","#E8F5E9",["Plastic bottle","Tissue paper","Mod podge or glue","Water","Brush"],["Tear tissue paper into small pieces","Mix glue with a little water","Apply glue to bottle section","Stick tissue paper overlapping","Apply more glue on top","Let dry, add paper flowers"]),
+C(10,"diy","Paper Lantern","🏮",35,"20 min","2,200","🏮","A glowing paper lantern for decoration","#FFF3E0",["A4 paper","Scissors","Glue","Markers","Ruler"],["Fold paper in half lengthwise","Cut slits from fold almost to edge","Unfold and decorate with markers","Roll into cylinder","Glue edges together","Add paper strip handle"]),
+C(11,"diy","Bookmark Monster","📚",12,"10 min","2,650","📚","A funny monster bookmark for your books","#FFE4EF",["Card","Scissors","Glue","Googly eyes","Markers"],["Cut card into corner bookmark shape","Colour with fun monster pattern","Add googly eyes","Draw teeth with marker","Decorate with spots or scales","Slide over page corner"]),
+C(12,"diy","Star Garland","⭐",18,"25 min","1,875","⭐","A twinkling garland of paper stars","#FFF8E1",["Yellow paper","Scissors","String","Glue","Glitter"],["Cut lots of star shapes","Add glitter to stars","Let dry completely","Fold each star slightly","String stars along thread","Hang as decoration"]),
+C(13,"diy","DIY Bookmarks","🎨",6,"8 min","3,100","🎨","Colourful corner bookmarks for books","#E3F2FD",["Card squares","Scissors","Markers","Stickers"],["Cut card into 8x8cm squares","Fold diagonally in half","Fold top corners to centre fold","Tuck one inside the other","Decorate with drawings","Slide onto page corner"]),
+C(14,"diy","Cardboard Train","🚂",55,"50 min","1,430","🚂","A chunky cardboard train you can play with","#FFF3E0",["Cardboard boxes","Toilet rolls","Paint","Glue","Scissors","Brad fasteners"],["Cut boxes into train car shapes","Make wheels from toilet rolls","Paint each car a different colour","Connect cars with brad fasteners","Add windows and doors","Make a track from card"]),
+C(15,"diy","Paper Fan","🌸",15,"12 min","2,780","🌸","A pretty folded fan to keep you cool","#FCE4EC",["A4 paper","Tape","Markers","Stickers"],["Decorate paper with patterns","Fold paper accordion style 1cm folds","Tape tightly at one end","Fan out the other end","Decorate with stickers","Wave to feel the breeze"]),
+C(16,"diy","Nature Sun Catcher","☀️",38,"30 min","1,620","☀️","A sparkly sun catcher from natural materials","#FFF8E1",["Clear contact paper","Leaves","Flowers","String","Scissors"],["Cut two equal contact paper pieces","Lay flowers and leaves on one piece","Place second piece sticky side down","Press firmly together","Cut into shape","Hang in sunny window"]),
+C(17,"diy","Paper Pinwheel","🌀",25,"15 min","2,340","🌀","A spinning pinwheel that spins in wind","#E3F2FD",["Coloured paper","Scissors","Pin","Pencil with eraser","Ruler"],["Cut paper into 20cm square","Draw diagonal lines corner to corner","Cut along lines halfway to centre","Fold every other point to centre","Push pin through all points and centre","Push pin into eraser"]),
+C(18,"diy","Tissue Paper Butterfly","🦋",22,"18 min","2,890","🦋","A beautiful butterfly from tissue paper","#F3E5F5",["Tissue paper","Pipe cleaner","Scissors"],["Cut two large teardrop shapes","Cut two small teardrop shapes","Pinch together in centre","Twist pipe cleaner around middle","Curl ends of pipe cleaner for antennae","Fluff out wings"]),
+C(19,"diy","Paper Bead Necklace","💚",30,"25 min","1,970","💚","Colourful beads rolled from magazine paper","#E8F5E9",["Magazine pages","Glue","Toothpick","String","Varnish (optional)"],["Cut long triangle strips from magazine","Apply glue along strip","Roll tightly from wide end around toothpick","Slide off when dry","Make lots of beads","Thread onto string"]),
+C(20,"diy","Emoji Mood Pillow","😊",42,"40 min","2,150","😊","A squishy pillow with your favourite emoji","#FFE4EF",["Felt squares","Stuffing/cotton wool","Glue or needle and thread","Markers"],["Cut two equal circles from felt","Draw emoji face on one circle","Glue or sew edges leaving gap","Stuff with cotton wool","Close the opening","Hug your emoji"]),
+C(21,"origami","Lucky Stars ★CHALLENGE","⭐",15,"15 min","4,385","⭐","A jar full of magical paper stars","#FFF8E1",[],["Cut paper into long strips 1.5cm wide","Tie a loose knot at one end","Flatten knot into pentagon shape","Wrap strip around pentagon","Keep wrapping neatly","Tuck end in and pinch sides to puff"]),
+C(22,"origami","Jumping Frog","🐸",18,"10 min","3,500","🐸","A frog that really jumps when you press it","#E8F5E9",[],["Start with rectangle paper","Fold top corners to centre","Fold bottom half up","Fold corners to centre again","Fold bottom half back down","Press tail to make frog jump"]),
+C(23,"origami","Origami Crane","🦢",42,"15 min","5,200","🦢","The classic origami crane symbol of luck","#E3F2FD",[],["Start with square paper coloured side down","Fold in half both ways","Fold diagonally both ways","Collapse into small square","Fold edges to centre line","Fold top triangle down","Reverse fold sides up","Pull wings apart gently"]),
+C(24,"origami","Origami Heart","❤️",10,"8 min","6,100","❤️","A sweet folded heart to give to someone","#FCE4EC",[],["Start with square paper","Fold in half diagonally","Fold in half again","Open and fold top corners down","Fold bottom point up","Fold side corners in","Fold bottom edges up","Turn over to reveal heart"]),
+C(25,"origami","Paper Dragon","🐉",72,"25 min","2,987","🐉","An impressive dragon with wings and tail","#FFF3E0",[],["Start with large square","Make bird base fold","Fold wings out","Shape tail with reverse folds","Make head with petal fold","Crimp neck and tail","Open body slightly","Add details with marker"]),
+C(26,"origami","Origami Butterfly","🦋",22,"10 min","3,800","🦋","A pretty butterfly that looks ready to fly","#F3E5F5",[],["Start with square paper","Fold in half diagonally","Fold in half again","Open last fold","Fold bottom corners up to top","Fold in half backwards","Hold middle and pull wings","Adjust wings to flutter"]),
+C(27,"origami","Origami Cat","🐱",20,"10 min","3,200","🐱","A cute cat face you can draw on","#FFF3E0",[],["Start with square paper","Fold in half diagonally","Fold top corners down for ears","Fold bottom point up slightly","Fold sides in a little","Turn over","Draw cat face with markers","Add whiskers"]),
+C(28,"origami","Origami Fox","🦊",28,"12 min","2,640","🦊","A clever fox with pointy ears","#FFF3E0",[],["Start with square paper","Fold diagonally","Fold corners to bottom point","Fold top layer up","Fold sides back","Shape ears by folding points out","Turn over","Draw fox face"]),
+C(29,"origami","Origami Boat","⛵",12,"8 min","2,900","⛵","A boat that actually floats in water","#E3F2FD",[],["Start with rectangle paper","Fold in half lengthwise","Fold in half crosswise","Fold top corners to centre","Fold bottom strips up each side","Open from bottom and flatten","Fold bottom triangle up each side","Open and flatten into boat"]),
+C(30,"origami","Paper Aeroplane","✈️",8,"5 min","7,200","✈️","The world's best paper aeroplane design","#E3F2FD",[],["Start with A4 paper","Fold in half lengthwise","Fold top corners to centre","Fold again to centre","Fold in half","Fold wings down each side","Open wings out flat","Throw and watch it soar"]),
+C(31,"origami","Origami Fish","🐠",25,"12 min","2,460","🐠","A colourful fish with beautiful scales","#E3F2FD",[],["Start with square paper","Fold in half diagonally","Fold top point down","Fold sides to centre","Fold top flap down","Fold small triangle up for mouth","Fold tail fin","Draw scales and eye"]),
+C(32,"origami","Lotus Flower","🌸",38,"18 min","3,150","🌸","A beautiful multi-petalled lotus flower","#FCE4EC",[],["Start with square paper","Fold all corners to centre","Fold corners to centre again","Hold carefully and turn over","Pull out corners from behind","Pull out corner flaps","Shape petals gently","Open centre carefully"]),
+C(33,"origami","Origami Dog","🐶",16,"8 min","2,930","🐶","An adorable dog face to colour in","#FFF3E0",[],["Start with square paper","Fold diagonally","Fold top corner down for face","Fold side corners down for ears","Fold bottom point up slightly","Turn over","Draw dog face with markers","Add spots if you like"]),
+C(34,"origami","Origami Turtle","🐢",35,"15 min","2,180","🐢","A wise little turtle with a domed shell","#E8F5E9",[],["Start with square paper","Fold diagonally","Fold bottom corners up","Fold top layer down","Fold out flaps for legs","Fold small head from top point","Shape dome of shell","Add shell pattern with marker"]),
+C(35,"origami","Origami Whale","🐳",30,"12 min","2,570","🐳","A majestic whale with a water spout","#E3F2FD",[],["Start with square paper","Fold in half diagonally","Fold bottom right edge to top","Fold back down at angle","Fold tail fin out","Shape body curves","Fold up water spout","Add eye with marker"]),
+C(36,"origami","Origami Owl","🦉",45,"20 min","1,980","🦉","A wise owl with big round eyes","#FFF3E0",[],["Start with square paper","Fold in half","Fold bottom corners to centre","Fold top points out for ears","Fold bottom edge up","Fold back edge down","Shape face","Draw big eyes and beak"]),
+C(37,"origami","Origami Elephant","🐘",52,"22 min","1,740","🐘","A big friendly elephant with a long trunk","#E3F2FD",[],["Start with large square","Make preliminary base","Fold front point for trunk","Reverse fold trunk tip","Fold back for tail","Open legs apart","Shape ears with folds","Curl trunk slightly"]),
+C(38,"origami","Origami Penguin","🐧",40,"18 min","2,310","🐧","A cute penguin standing on ice","#E3F2FD",[],["Start with square paper","Fold diagonally","Fold sides to centre","Fold bottom up","Reverse fold for head","Fold wings out","Shape feet","Add eye and beak with marker"]),
+C(39,"origami","Origami Wolf","🐺",60,"25 min","1,650","🐺","A fierce wolf howling at the moon","#F3E5F5",[],["Start with large square","Make bird base","Shape head with petal fold","Fold ears out","Reverse fold for snout","Open jaw slightly","Shape tail","Add details with marker"]),
+C(40,"origami","Origami Phoenix","🔥",82,"35 min","2,090","🔥","A legendary phoenix rising from flames","#FFF3E0",[],["Start with very large square","Make stretched bird base","Fold wings with multiple pleats","Shape tail with reverse folds","Form head and beak","Open body","Curl wing feathers","Add flame details with marker"]),
+C(41,"quilling","Quilling Heart Card","💕",22,"30 min","1,800","💕","A beautiful heart card made with paper coils","#FCE4EC",["Quilling paper strips","Quilling tool","Glue","Card blank","Tweezers"],["Roll strips into tight coils","Shape coils into teardrops","Arrange two teardrops as heart","Glue to card front","Add small coils around","Write message inside"]),
+C(42,"quilling","Quilling Butterfly","🦋",45,"45 min","2,200","🦋","A gorgeous butterfly with detailed wings","#F3E5F5",["Quilling strips","Quilling tool","Glue","Background card","Tweezers"],["Make teardrop shapes for wings","Create different sized coils","Arrange four wings symmetrically","Add body with tight coil","Make antennae from strips","Glue all pieces down"]),
+C(43,"quilling","Quilling Sunflower","🌻",55,"60 min","1,950","🌻","A stunning sunflower with petals and seeds","#FFF8E1",["Yellow quilling strips","Brown strips","Green strips","Glue","Background card"],["Roll loose coils for petals","Shape into pointed petals","Make tight brown coils for centre","Arrange petals around centre","Add green stem and leaves","Glue everything to card"]),
+C(44,"quilling","Quilling Star","⭐",30,"25 min","1,650","⭐","A five-pointed star made from paper coils","#FFF3E0",["Yellow quilling strips","Glue","Card background","Tweezers"],["Make 10 identical teardrop coils","Pinch each into a point","Arrange in pairs for each arm","Glue in star formation","Add smaller coils between points","Mount on background"]),
+C(45,"quilling","Flower Wreath","🌸",72,"90 min","2,100","🌸","A full wreath of tiny quilled flowers","#E8F5E9",["Mixed colour strips","Green strips","Glue","Round card","Tweezers"],["Make 20+ tiny flower shapes","Roll green leaf shapes","Arrange flowers in circle","Fill gaps with leaves","Glue all pieces carefully","Frame if desired"]),
+C(46,"quilling","Quilling Ocean Fish","🐠",50,"50 min","1,750","🐠","A tropical fish with colourful scale coils","#E3F2FD",["Orange and white strips","Blue strips","Glue","Blue card","Tweezers"],["Roll coils for fish body","Make scale pattern with coils","Create tail fan shape","Add eye detail","Make bubble coils around fish","Mount on blue background"]),
+C(47,"quilling","Quilling Peacock","🦚",68,"75 min","1,890","🦚","A magnificent peacock with feather display","#E8F5E9",["Green and blue strips","Brown strips","Glue","Card","Tweezers"],["Make body from tight coil","Create feather shapes for tail","Add eye spots to feathers","Arrange fan display","Make head and neck","Add crown feathers"]),
+C(48,"quilling","Quilling Tree of Life","🌳",78,"120 min","1,430","🌳","An intricate tree with hundreds of coils","#E8F5E9",["Brown and green strips","Flower colour strips","Glue","Large card","Tweezers"],["Make trunk from rolled strips","Branch out with curved strips","Create hundreds of leaf coils","Add flower coils in colour","Fill all branches","Mount on large background"]),
+C(49,"quilling","Moon and Stars","🌙",38,"40 min","2,050","🌙","A dreamy night sky of moons and stars","#EDE9FE",["Yellow and white strips","Blue card","Glue","Tweezers"],["Make crescent moon shape","Roll star points from strips","Create several star sizes","Arrange on dark blue card","Add tiny dot coils for twinkle","Frame for bedroom"]),
+C(50,"quilling","Quilling Feather","🪶",42,"35 min","1,760","🪶","A realistic feather with detailed barbs","#F3E5F5",["Strips in two colours","Glue","White card","Tweezers"],["Roll central quill strip","Make long teardrop shapes","Alternate colours for barbs","Arrange on each side of quill","Taper towards tip","Mount on card"]),
+C(51,"quilling","Quilling Rose","🌹",60,"55 min","2,230","🌹","A beautiful layered rose in full bloom","#FCE4EC",["Red and pink strips","Green strips","Glue","Card","Tweezers"],["Roll tight centre coil","Make loose petals around it","Layer petals outward","Create outer loose petals","Add green leaf shapes","Arrange in bloom formation"]),
+C(52,"quilling","Quilling Mushroom","🍄",28,"25 min","1,840","🍄","A cute toadstool with spots","#E8F5E9",["Red and white strips","Brown strips","Green strips","Glue","Card"],["Roll red dome shape for cap","Add white dot coils on cap","Make white stem from strips","Add green grass coils","Mount on card background","Add tiny details"]),
+C(53,"quilling","Quilling Swan","🦢",48,"50 min","1,680","🦢","An elegant swan on water","#E3F2FD",["White strips","Blue strips","Yellow strips","Glue","Card","Tweezers"],["Roll white body shape","Create curved neck","Make wing feather coils","Roll blue water wave shapes","Add yellow beak detail","Arrange complete scene"]),
+C(54,"quilling","Quilling Elephant","🐘",65,"70 min","1,520","🐘","A detailed elephant with tusks and trunk","#E3F2FD",["Grey strips","White strips","Glue","Card","Tweezers"],["Make large oval body","Roll head circle","Create ear shapes","Make trunk from curved strip","Add white tusk shapes","Arrange complete elephant"]),
+C(55,"quilling","Quilling Rainbow","🌈",35,"30 min","2,380","🌈","A cheerful rainbow with clouds","#E3F2FD",["Rainbow colour strips","White strips","Blue card","Glue","Tweezers"],["Make arched strips in each colour","Stack to form rainbow layers","Roll white fluffy cloud shapes","Add raindrops below","Mount on blue background","Add sun in corner"]),
+C(56,"quilling","Quilling Owl","🦉",55,"55 min","1,730","🦉","A wise owl perched on a branch","#FFF3E0",["Brown strips","Yellow strips","White strips","Glue","Card"],["Make oval body shape","Roll large eye circles","Add smaller eye centres","Create wing shapes","Make branch from strips","Perch owl on branch"]),
+C(57,"quilling","Quilling Cupcake","🧁",32,"30 min","2,140","🧁","A yummy cupcake with swirly icing","#FFE4EF",["Pink and cream strips","Brown strips","Glue","Card","Tweezers"],["Make brown case with folds","Create cream swirl for icing","Add pink coils as sprinkles","Make cherry on top","Arrange complete cupcake","Mount on pretty card"]),
+C(58,"quilling","Quilling Village","🏘️",85,"150 min","1,280","🏘️","A complete village scene with houses","#E3F2FD",["Mixed colour strips","Green strips","Glue","Large card","Tweezers"],["Make house shapes from strips","Create roof triangles","Add window and door coils","Make trees from green strips","Create path with coils","Arrange complete village"]),
+C(59,"quilling","Hot Air Balloon","🎈",70,"80 min","1,640","🎈","A magnificent balloon floating in the sky","#FFF8E1",["Rainbow strips","Brown strips","Blue card","Glue","Tweezers"],["Make large balloon from coils","Add colour stripe sections","Create basket from brown strips","Connect with thin rope strips","Add clouds around balloon","Mount on blue background"]),
+C(60,"quilling","Quilling Dragon","🐲",90,"180 min","1,950","🐲","An epic dragon masterpiece challenge","#FFF3E0",["Green and gold strips","Red strips","Glue","Large dark card","Tweezers"],["Make body from large coils","Create scale texture on body","Roll head with muzzle shape","Make spiky back fins","Create flame from red coils","Add wing shapes and details"]),
+C(61,"pbn","Happy Sun","☀️",5,"10 min","4,820","☀️","A cheerful sunny face painting","#FFF8E1",[],[]),
+C(62,"pbn","Cute Cat","🐱",8,"12 min","3,940","🐱","An adorable cat face painting","#FFF3E0",[],[]),
+C(63,"pbn","Rainbow Sky","🌈",10,"12 min","5,100","🌈","A rainbow across a blue sky","#E3F2FD",[],[]),
+C(64,"pbn","Pretty Butterfly","🦋",12,"15 min","3,670","🦋","A beautiful butterfly in flight","#F3E5F5",[],[]),
+C(65,"pbn","Baby Dragon","🐉",15,"15 min","3,290","🐉","A cute baby dragon hatching","#E8F5E9",[],[]),
+C(66,"pbn","Magical Unicorn","🦄",18,"18 min","4,450","🦄","A majestic unicorn in a meadow","#FCE4EC",[],[]),
+C(67,"pbn","Under the Sea","🌊",22,"20 min","3,180","🌊","A colourful underwater scene","#E3F2FD",[],[]),
+C(68,"pbn","Funny Robot","🤖",25,"20 min","2,870","🤖","A friendly robot to colour in","#E3F2FD",[],[]),
+C(69,"pbn","Flower Garden","🌸",28,"22 min","3,560","🌸","A blooming garden scene","#E8F5E9",[],[]),
+C(70,"pbn","Princess Castle","🏰",32,"25 min","2,940","🏰","A fairy tale castle at sunset","#F3E5F5",[],[]),
+C(71,"pbn","Space Rocket","🚀",38,"28 min","3,110","🚀","A rocket blasting through space","#EDE9FE",[],[]),
+C(72,"pbn","Jungle Animals","🦁",42,"30 min","2,680","🦁","Friendly animals in the jungle","#E8F5E9",[],[]),
+C(73,"pbn","Autumn Forest","🍂",48,"32 min","2,450","🍂","A forest in autumn colours","#FFF3E0",[],[]),
+C(74,"pbn","Polar Bear","🐻‍❄️",52,"35 min","2,310","🐻‍❄️","A polar bear in the snow","#E3F2FD",[],[]),
+C(75,"pbn","Tropical Fish","🐠",55,"35 min","2,190","🐠","Colourful fish in the ocean","#E3F2FD",[],[]),
+C(76,"pbn","Mountain Sunrise","🏔️",60,"38 min","2,020","🏔️","A beautiful mountain at sunrise","#EDE9FE",[],[]),
+C(77,"pbn","Magic Fairy","🧚",65,"40 min","2,760","🧚","A fairy in an enchanted forest","#F3E5F5",[],[]),
+C(78,"pbn","Dinosaur Park","🦕",70,"42 min","2,380","🦕","Dinosaurs in a prehistoric park","#E8F5E9",[],[]),
+C(79,"pbn","Mystical Dragon","🐲",78,"45 min","2,640","🐲","A dragon in a fantasy world","#EDE9FE",[],[]),
+C(80,"pbn","Starry Night","🌌",88,"50 min","3,140","🌌","A stunning starry night sky","#EDE9FE",[],[]),
+];
+
+// ═══════════════════════════════════════════════════
+// PBN SCENES
+// ═══════════════════════════════════════════════════
+const PBN_SCENES={
+61:{craftId:61,emoji:"☀️",sz:6,pal:["#FFD93D","#FF8C42","#FF6B9D","#87CEEB"],flat:[
+0,4,4,4,4,0,
+4,3,1,1,3,4,
+4,1,2,2,1,4,
+4,1,2,2,1,4,
+4,3,1,1,3,4,
+0,4,4,4,4,0
+]},
+62:{craftId:62,emoji:"🐱",sz:6,pal:["#FF8C42","#FF6B9D","#8B4513","#FFE4C4"],flat:[
+1,1,0,0,1,1,
+1,4,2,2,4,1,
+3,2,2,2,2,3,
+0,2,1,1,2,0,
+0,3,2,2,3,0,
+0,0,3,3,0,0
+]},
+63:{craftId:63,emoji:"🌈",sz:8,pal:["#FF4757","#FF8C42","#FFD93D","#4ADE80","#00B4D8","#7C3AED"],flat:[
+0,0,0,0,0,0,0,0,
+0,0,1,1,1,1,0,0,
+0,1,2,2,2,2,1,0,
+1,2,3,3,3,3,2,1,
+2,3,4,4,4,4,3,2,
+3,4,5,5,5,5,4,3,
+4,5,6,6,6,6,5,4,
+0,0,0,0,0,0,0,0
+]},
+64:{craftId:64,emoji:"🦋",sz:8,pal:["#C084FC","#FFD93D","#FF6B9D","#00C8BB"],flat:[
+0,1,1,0,0,1,1,0,
+1,2,1,3,3,1,2,1,
+1,1,3,4,4,3,1,1,
+2,3,4,1,1,4,3,2,
+2,3,4,1,1,4,3,2,
+1,1,3,4,4,3,1,1,
+1,2,1,3,3,1,2,1,
+0,1,1,0,0,1,1,0
+]},
+65:{craftId:65,emoji:"🐉",sz:8,pal:["#4ADE80","#C084FC","#FFD93D","#FF4757"],flat:[
+0,0,3,3,3,0,0,0,
+0,3,1,1,1,3,0,0,
+3,1,2,1,2,1,3,0,
+3,1,1,1,1,1,3,4,
+3,1,3,1,3,1,4,4,
+0,3,1,1,1,4,4,0,
+0,0,3,1,4,4,0,0,
+0,0,0,4,4,0,0,0
+]},
+66:{craftId:66,emoji:"🦄",sz:8,pal:["#FFE4EF","#FF6B9D","#C084FC","#FFD93D","#4ADE80"],flat:[
+0,0,0,4,0,0,0,0,
+0,0,4,4,4,0,0,0,
+0,1,1,3,1,1,0,0,
+1,2,1,1,1,2,1,0,
+1,1,2,1,2,1,1,0,
+0,1,1,1,1,1,0,0,
+0,5,1,1,1,5,0,0,
+0,5,5,0,5,5,0,0
+]},
+67:{craftId:67,emoji:"🌊",sz:8,pal:["#00B4D8","#4ADE80","#FF8C42","#C084FC","#FFD93D"],flat:[
+1,1,1,1,1,1,1,1,
+1,2,1,1,1,1,2,1,
+1,1,3,1,1,3,1,1,
+2,1,1,4,4,1,1,2,
+1,2,1,4,4,1,2,1,
+1,1,5,1,1,5,1,1,
+2,1,1,2,2,1,1,2,
+1,1,1,1,1,1,1,1
+]},
+68:{craftId:68,emoji:"🤖",sz:8,pal:["#00B4D8","#FFD93D","#FF4757","#4ADE80","#C084FC"],flat:[
+0,1,1,1,1,1,1,0,
+1,1,2,1,1,2,1,1,
+1,2,2,2,2,2,2,1,
+1,1,3,1,1,3,1,1,
+1,1,1,3,3,1,1,1,
+2,1,4,4,4,4,1,2,
+2,1,1,5,5,1,1,2,
+0,2,2,0,0,2,2,0
+]},
+69:{craftId:69,emoji:"🌸",sz:8,pal:["#FF6B9D","#4ADE80","#FFD93D","#C084FC","#FF8C42"],flat:[
+0,2,0,1,1,0,2,0,
+2,2,1,3,3,1,2,2,
+0,1,3,2,2,3,1,0,
+1,3,2,1,1,2,3,1,
+1,3,2,1,1,2,3,1,
+0,1,3,2,2,3,1,0,
+2,2,1,5,5,1,2,2,
+0,2,0,1,1,0,2,0
+]},
+70:{craftId:70,emoji:"🏰",sz:8,pal:["#AAAAAA","#FF6B9D","#FFD93D","#7C3AED","#FFFFFF"],flat:[
+1,0,1,0,0,1,0,1,
+1,1,1,1,1,1,1,1,
+2,1,1,3,3,1,1,2,
+2,1,3,4,4,3,1,2,
+1,1,1,3,3,1,1,1,
+1,5,1,1,1,1,5,1,
+1,1,5,1,1,5,1,1,
+1,1,1,1,1,1,1,1
+]},
+71:{craftId:71,emoji:"🚀",sz:10,pal:["#00B4D8","#FF4757","#FFD93D","#4ADE80","#C084FC"],flat:[
+0,0,0,0,2,2,0,0,0,0,
+0,0,0,2,1,1,2,0,0,0,
+0,0,2,1,3,3,1,2,0,0,
+0,2,1,3,1,1,3,1,2,0,
+2,1,1,1,3,3,1,1,1,2,
+2,1,3,1,1,1,1,3,1,2,
+0,2,1,1,4,4,1,1,2,0,
+0,0,5,1,1,1,1,5,0,0,
+0,5,5,0,0,0,0,5,5,0,
+5,5,0,0,0,0,0,0,5,5
+]},
+72:{craftId:72,emoji:"🦁",sz:10,pal:["#FF8C42","#FFD93D","#4ADE80","#8B4513","#FF4757"],flat:[
+0,2,2,2,0,0,2,2,2,0,
+2,1,1,1,2,2,1,1,1,2,
+2,1,4,1,2,2,1,4,1,2,
+2,1,1,1,2,2,1,1,1,2,
+0,2,2,1,1,1,1,2,2,0,
+0,0,1,1,3,3,1,1,0,0,
+0,1,2,1,1,1,1,2,1,0,
+1,2,1,1,5,5,1,1,2,1,
+0,1,1,1,1,1,1,1,1,0,
+0,0,1,3,0,0,3,1,0,0
+]},
+73:{craftId:73,emoji:"🍂",sz:10,pal:["#FF8C42","#FF4757","#FFD93D","#8B4513","#4ADE80"],flat:[
+0,0,5,5,5,5,5,5,0,0,
+0,5,1,1,1,1,1,1,5,0,
+5,1,1,2,2,2,2,1,1,5,
+5,1,2,3,3,3,3,2,1,5,
+5,1,2,3,4,4,3,2,1,5,
+5,1,2,3,4,4,3,2,1,5,
+5,1,2,3,3,3,3,2,1,5,
+5,1,1,2,2,2,2,1,1,5,
+0,5,1,1,1,1,1,1,5,0,
+0,0,5,5,5,4,5,5,0,0
+]},
+74:{craftId:74,emoji:"🐻‍❄️",sz:10,pal:["#E8F4FD","#00B4D8","#333333","#FF6B9D","#FFD93D"],flat:[
+0,0,1,1,1,1,1,1,0,0,
+0,1,1,2,2,2,2,1,1,0,
+1,1,2,1,1,1,1,2,1,1,
+1,2,1,3,1,1,3,1,2,1,
+1,2,1,1,1,1,1,1,2,1,
+1,2,1,1,5,5,1,1,2,1,
+1,1,2,1,4,1,2,1,1,1,
+0,1,1,2,1,1,2,1,1,0,
+0,0,1,1,2,2,1,1,0,0,
+0,0,0,1,1,1,1,0,0,0
+]},
+75:{craftId:75,emoji:"🐠",sz:10,pal:["#FF8C42","#FFFFFF","#FF4757","#00C8BB","#FFD93D"],flat:[
+0,0,0,4,4,4,0,0,0,0,
+0,0,4,1,1,1,4,0,0,0,
+0,4,1,2,1,2,1,4,0,0,
+4,1,2,1,3,1,2,1,4,0,
+4,1,1,3,1,3,1,1,4,5,
+4,1,1,3,1,3,1,1,4,5,
+4,1,2,1,3,1,2,1,4,0,
+0,4,1,2,1,2,1,4,0,0,
+0,0,4,1,1,1,4,0,0,0,
+0,0,0,4,4,4,0,0,0,0
+]},
+76:{craftId:76,emoji:"🏔️",sz:10,pal:["#FF6B9D","#FFD93D","#FF8C42","#7C3AED","#4ADE80"],flat:[
+0,0,0,0,2,2,0,0,0,0,
+0,0,0,2,1,1,2,0,0,0,
+0,0,2,1,1,1,1,2,0,0,
+0,2,1,1,3,3,1,1,2,0,
+2,1,1,3,1,1,3,1,1,2,
+2,1,3,1,4,4,1,3,1,2,
+1,3,1,4,5,5,4,1,3,1,
+3,1,4,5,5,5,5,4,1,3,
+1,4,5,5,5,5,5,5,4,1,
+4,5,5,5,5,5,5,5,5,4
+]},
+77:{craftId:77,emoji:"🧚",sz:10,pal:["#FFE0C0","#FF6B9D","#C084FC","#FFD93D","#00C8BB"],flat:[
+0,0,3,3,0,0,3,3,0,0,
+0,3,1,1,3,3,1,1,3,0,
+3,1,4,1,1,1,1,4,1,3,
+3,1,1,2,1,1,2,1,1,3,
+0,3,1,2,1,1,2,1,3,0,
+0,0,3,1,1,1,1,3,0,0,
+0,0,1,5,1,1,5,1,0,0,
+0,0,1,1,5,5,1,1,0,0,
+0,0,0,1,1,1,1,0,0,0,
+0,0,0,0,1,1,0,0,0,0
+]},
+78:{craftId:78,emoji:"🦕",sz:10,pal:["#4ADE80","#FFD93D","#FF4757","#8B4513","#00C8BB"],flat:[
+0,0,0,2,2,0,0,0,0,0,
+0,0,2,1,1,2,0,0,0,0,
+0,2,1,3,3,1,2,0,0,0,
+2,1,3,1,1,3,1,2,0,0,
+1,1,1,3,3,1,1,1,2,0,
+1,3,1,1,1,1,3,1,1,2,
+1,1,3,1,4,1,3,1,1,1,
+0,1,1,3,1,3,1,1,1,0,
+0,0,5,1,1,1,5,1,0,0,
+0,0,5,5,0,5,5,0,0,0
+]},
+79:{craftId:79,emoji:"🐲",sz:10,pal:["#7C3AED","#C084FC","#FFD93D","#FF4757","#00C8BB"],flat:[
+0,4,4,0,0,0,4,4,0,0,
+4,1,1,4,0,4,1,1,4,0,
+4,1,3,1,4,1,3,1,1,4,
+0,4,1,3,1,3,1,4,1,4,
+0,4,1,1,2,2,1,1,4,0,
+0,0,4,1,2,2,1,4,0,0,
+0,0,4,1,5,5,1,4,0,0,
+0,0,0,4,1,1,4,0,0,0,
+0,0,0,4,1,1,4,0,0,0,
+0,0,0,0,4,4,0,0,0,0
+]},
+80:{craftId:80,emoji:"🌌",sz:10,pal:["#0f1535","#7C3AED","#C084FC","#FFD93D","#00C8BB"],flat:[
+1,1,1,4,1,1,4,1,1,1,
+1,4,1,1,1,4,1,1,4,1,
+1,1,2,1,1,1,1,2,1,1,
+2,1,1,3,2,2,3,1,1,2,
+1,2,1,2,3,3,2,1,2,1,
+1,2,1,2,3,3,2,1,2,1,
+2,1,1,3,2,2,3,1,1,2,
+1,1,2,1,1,1,1,2,1,1,
+1,4,1,1,1,4,1,1,4,1,
+1,1,1,5,1,1,5,1,1,1
+]}
+};
+
+// ═══════════════════════════════════════════════════
+// VIDEOS DATA
+// ═══════════════════════════════════════════════════
+const VID_CATS=[
+{id:"all",label:"All",emoji:"🎬",color:"#FF6B9D"},
+{id:"origami",label:"Origami",emoji:"🦢",color:"#00C8BB"},
+{id:"diy",label:"DIY",emoji:"✂️",color:"#FF8C42"},
+{id:"quilling",label:"Quilling",emoji:"🌀",color:"#C084FC"},
+{id:"drawing",label:"Drawing",emoji:"🖍️",color:"#F59E0B"},
+{id:"pbn",label:"Paint by No.",emoji:"🖌️",color:"#FF6B9D"},
+{id:"science",label:"Science",emoji:"🔬",color:"#4ADE80"}
+];
+const VIDEOS=[
+{id:1,cat:"origami",emoji:"🐸",title:"Origami Jumping Frog",ch:"Easy Origami Kids",dur:"5:23",views:"2.1M",age:"4+",diff:8,url:"https://www.youtube.com/results?search_query=origami+jumping+frog+for+kids"},
+{id:2,cat:"origami",emoji:"⭐",title:"Lucky Paper Stars Tutorial",ch:"Paper Magic Kids",dur:"6:15",views:"4.5M",age:"5+",diff:15,url:"https://www.youtube.com/results?search_query=lucky+paper+stars+tutorial+kids"},
+{id:3,cat:"origami",emoji:"🦢",title:"Classic Origami Crane",ch:"Origami World",dur:"10:15",views:"6.8M",age:"8+",diff:42,url:"https://www.youtube.com/results?search_query=classic+origami+crane+tutorial"},
+{id:4,cat:"origami",emoji:"❤️",title:"Easy Origami Heart",ch:"Love Paper Crafts",dur:"5:00",views:"5.1M",age:"4+",diff:10,url:"https://www.youtube.com/results?search_query=easy+origami+heart+for+kids"},
+{id:5,cat:"origami",emoji:"🌸",title:"Origami Flower Easy",ch:"Flower Folds",dur:"7:00",views:"3.2M",age:"6+",diff:18,url:"https://www.youtube.com/results?search_query=easy+origami+flower+tutorial+kids"},
+{id:6,cat:"origami",emoji:"🐱",title:"Origami Cat Face",ch:"Animal Origami",dur:"6:30",views:"2.8M",age:"5+",diff:12,url:"https://www.youtube.com/results?search_query=origami+cat+face+easy+kids"},
+{id:7,cat:"origami",emoji:"🚀",title:"Paper Rocket Origami",ch:"Space Paper Arts",dur:"8:00",views:"1.9M",age:"6+",diff:28,url:"https://www.youtube.com/results?search_query=paper+rocket+origami+kids"},
+{id:8,cat:"origami",emoji:"🐉",title:"Origami Dragon for Kids",ch:"Dragon Folds",dur:"18:30",views:"2.3M",age:"10+",diff:72,url:"https://www.youtube.com/results?search_query=origami+dragon+for+kids+tutorial"},
+{id:9,cat:"diy",emoji:"🎒",title:"Kawaii Paper Bags 5 Animals",ch:"Paper Pals",dur:"8:45",views:"1.5M",age:"6+",diff:14,url:"https://www.youtube.com/results?search_query=kawaii+paper+bag+animals+diy"},
+{id:10,cat:"diy",emoji:"🐼",title:"Milk Box Panda Craft",ch:"Recycle & Create",dur:"12:00",views:"2.1M",age:"6+",diff:32,url:"https://www.youtube.com/results?search_query=milk+box+panda+craft+kids"},
+{id:11,cat:"diy",emoji:"🌈",title:"Rainbow Windsock Tutorial",ch:"Crafty Kids TV",dur:"9:00",views:"1.8M",age:"4+",diff:10,url:"https://www.youtube.com/results?search_query=rainbow+windsock+tutorial+kids"},
+{id:12,cat:"diy",emoji:"💐",title:"Paper Flower Bouquet",ch:"Blossom Arts",dur:"15:00",views:"3.8M",age:"6+",diff:28,url:"https://www.youtube.com/results?search_query=paper+flower+bouquet+diy+kids"},
+{id:13,cat:"diy",emoji:"💍",title:"DIY Paper Jewellery Set",ch:"Mini Makers",dur:"10:00",views:"2.4M",age:"5+",diff:8,url:"https://www.youtube.com/results?search_query=diy+paper+jewellery+kids"},
+{id:14,cat:"diy",emoji:"🤖",title:"Build a Paper Robot",ch:"Roboto Kids",dur:"11:00",views:"1.9M",age:"7+",diff:38,url:"https://www.youtube.com/results?search_query=build+paper+robot+kids+craft"},
+{id:15,cat:"diy",emoji:"🏡",title:"Paper House Diorama",ch:"Tiny Builders",dur:"20:00",views:"1.2M",age:"8+",diff:58,url:"https://www.youtube.com/results?search_query=paper+house+diorama+kids"},
+{id:16,cat:"diy",emoji:"🎭",title:"Paper Bag Puppets Show",ch:"Puppet Masters Kids",dur:"8:00",views:"4.2M",age:"4+",diff:8,url:"https://www.youtube.com/results?search_query=paper+bag+puppet+show+kids"},
+{id:17,cat:"quilling",emoji:"🌸",title:"Beginner Quilling for Kids",ch:"Quill & Create",dur:"12:00",views:"1.1M",age:"7+",diff:22,url:"https://www.youtube.com/results?search_query=beginner+quilling+for+kids"},
+{id:18,cat:"quilling",emoji:"💕",title:"Quilled Heart Greeting Card",ch:"Coil & Create",dur:"10:00",views:"1.3M",age:"7+",diff:22,url:"https://www.youtube.com/results?search_query=quilling+heart+greeting+card"},
+{id:19,cat:"quilling",emoji:"🦋",title:"Quilling Butterfly Easy",ch:"Paper Swirls",dur:"14:00",views:"0.8M",age:"8+",diff:45,url:"https://www.youtube.com/results?search_query=quilling+butterfly+easy+tutorial"},
+{id:20,cat:"quilling",emoji:"🌻",title:"Quilling Sunflower Tutorial",ch:"Quill Art Kids",dur:"18:00",views:"0.9M",age:"9+",diff:55,url:"https://www.youtube.com/results?search_query=quilling+sunflower+tutorial"},
+{id:21,cat:"quilling",emoji:"⭐",title:"Quilling Stars & Shapes",ch:"Paper Roll Fun",dur:"8:00",views:"0.7M",age:"7+",diff:30,url:"https://www.youtube.com/results?search_query=quilling+stars+shapes+kids"},
+{id:22,cat:"quilling",emoji:"🐠",title:"Quilling Fish Ocean Art",ch:"Ocean Crafts Studio",dur:"16:00",views:"0.6M",age:"9+",diff:50,url:"https://www.youtube.com/results?search_query=quilling+fish+ocean+art"},
+{id:23,cat:"drawing",emoji:"🐶",title:"How to Draw a Cute Dog",ch:"Draw So Cute",dur:"7:00",views:"8.2M",age:"4+",diff:8,url:"https://www.youtube.com/results?search_query=how+to+draw+cute+dog+easy+kids"},
+{id:24,cat:"drawing",emoji:"🦄",title:"Draw a Unicorn Step by Step",ch:"Art for Kids Hub",dur:"8:00",views:"6.5M",age:"5+",diff:12,url:"https://www.youtube.com/results?search_query=draw+unicorn+step+by+step+kids"},
+{id:25,cat:"drawing",emoji:"🐉",title:"Draw a Dragon Easy",ch:"Dragon Art Studio",dur:"9:00",views:"4.3M",age:"6+",diff:25,url:"https://www.youtube.com/results?search_query=draw+dragon+easy+kids"},
+{id:26,cat:"drawing",emoji:"🏰",title:"Draw a Fairy Tale Castle",ch:"Castle Arts",dur:"14:00",views:"2.7M",age:"7+",diff:38,url:"https://www.youtube.com/results?search_query=draw+fairy+tale+castle+kids"},
+{id:27,cat:"drawing",emoji:"🌊",title:"Draw Ocean Animals",ch:"Sea Art Kids",dur:"11:00",views:"3.1M",age:"5+",diff:18,url:"https://www.youtube.com/results?search_query=draw+ocean+animals+kids+easy"},
+{id:28,cat:"pbn",emoji:"🎨",title:"Paint by Numbers for Kids",ch:"Art Easy Kids",dur:"8:00",views:"3.2M",age:"4+",diff:10,url:"https://www.youtube.com/results?search_query=paint+by+numbers+for+kids"},
+{id:29,cat:"pbn",emoji:"🌈",title:"Rainbow Paint by Numbers",ch:"Colour Happy",dur:"10:00",views:"2.1M",age:"5+",diff:14,url:"https://www.youtube.com/results?search_query=rainbow+paint+by+numbers+kids"},
+{id:30,cat:"pbn",emoji:"🐱",title:"Cat Paint by Numbers",ch:"Kitty Arts",dur:"9:00",views:"1.8M",age:"5+",diff:18,url:"https://www.youtube.com/results?search_query=cat+paint+by+numbers+kids"},
+{id:31,cat:"pbn",emoji:"🦄",title:"Unicorn Paint by Numbers",ch:"Magic Palette",dur:"12:00",views:"2.5M",age:"6+",diff:22,url:"https://www.youtube.com/results?search_query=unicorn+paint+by+numbers+kids"},
+{id:32,cat:"science",emoji:"🌋",title:"Baking Soda Volcano!",ch:"Science Kids",dur:"6:00",views:"5.2M",age:"5+",diff:8,url:"https://www.youtube.com/results?search_query=baking+soda+volcano+kids+science"},
+{id:33,cat:"science",emoji:"🌈",title:"Rainbow Walking Water",ch:"Lab Kids",dur:"8:00",views:"4.1M",age:"5+",diff:12,url:"https://www.youtube.com/results?search_query=rainbow+walking+water+experiment+kids"},
+{id:34,cat:"science",emoji:"🎨",title:"Spin Art Painting Machine",ch:"Art Science Fun",dur:"10:00",views:"2.8M",age:"6+",diff:20,url:"https://www.youtube.com/results?search_query=spin+art+painting+machine+kids"}
+];
+
+// ═══════════════════════════════════════════════════
+// PUZZLE DATA
+// ═══════════════════════════════════════════════════
+const TILE_E=["🌟","🌈","⭐","💫","🎨","🎪","🎠","🎡","🎢","🎭","🎯","🎲","🌺","🦋","🍄","🌊","⛰️","🌻","🌙","🔮","💎","🪄","🏹","🛡️","🌿"];
+const PZ_THEMES=[
+{id:"animals",label:"Animals",emoji:"🦁",color:"#FF8C42",bg:"#FFF3E0"},
+{id:"space",label:"Space",emoji:"🚀",color:"#7C3AED",bg:"#EDE9FE"},
+{id:"ocean",label:"Ocean",emoji:"🐠",color:"#00B4D8",bg:"#E3F2FD"},
+{id:"dinos",label:"Dinosaurs",emoji:"🦕",color:"#4ADE80",bg:"#E8F5E9"},
+{id:"fairy",label:"Fairy Tales",emoji:"🧚",color:"#C084FC",bg:"#F3E5F5"},
+{id:"food",label:"Yummy Food",emoji:"🍕",color:"#F97316",bg:"#FFF0E0"},
+{id:"vehicles",label:"Vehicles",emoji:"🚗",color:"#F59E0B",bg:"#FFF8E1"},
+{id:"nature",label:"Nature",emoji:"🌺",color:"#4ADE80",bg:"#E8F5E9"},
+{id:"fantasy",label:"Fantasy",emoji:"🐉",color:"#FF4757",bg:"#FFE4EF"},
+{id:"sports",label:"Sports",emoji:"⚽",color:"#00C8BB",bg:"#E0F7FA"}
+];
+const PZ_SETS={
+animals:["🦁","🐘","🦒","🐯","🦓","🐆","🦏","🐻","🐼","🦊"],
+space:["🚀","🪐","⭐","🌙","🌍","🌟","☄️","👨‍🚀","🛸","🔭"],
+ocean:["🐠","🐙","🦀","🐳","🦈","🐬","🦞","🐡","🦑","🐚"],
+dinos:["🦕","🦖","🐊","🦴","🥚","🌋","🪨","🌿","🦎","🐢"],
+fairy:["🧚","🏰","🌈","✨","🌙","🌸","🦄","💫","👑","🪄"],
+food:["🍕","🍦","🎂","🍩","🍪","🌮","🍔","🍓","🍭","🧁"],
+vehicles:["🚗","✈️","🚂","🚢","🚁","🏎️","🛵","🚜","🚒","🛺"],
+nature:["🌺","🌲","🦋","🌊","⛰️","🌻","🌿","🍄","🌈","☀️"],
+fantasy:["🐉","🧙","🏹","⚔️","🛡️","💎","🔮","🌙","⭐","🦄"],
+sports:["⚽","🏀","🎾","🏊","🤸","🧗","🏋️","🎯","🏄","🥊"]
+};
+
+// ═══════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════
+const TIERS={beginner:{label:"Beginner",emoji:"🌱",color:"#4ADE80",range:[1,25]},explorer:{label:"Explorer",emoji:"🌟",color:"#F59E0B",range:[26,50]},creator:{label:"Creator",emoji:"🔥",color:"#FF8C42",range:[51,75]},master:{label:"Master",emoji:"💎",color:"#C084FC",range:[76,100]}};
+const getTier=n=>n<=25?"beginner":n<=50?"explorer":n<=75?"creator":"master";
+const PALETTE=["#FF6B9D","#FF4757","#FF8C42","#FFD93D","#4ADE80","#00C8BB","#00B4D8","#7C3AED","#C084FC","#F97316","#EC4899","#06B6D4","#84CC16","#EF4444","#8B4513","#000000","#555555","#AAAAAA","#FFFFFF","#FFB6C1"];
+const BRAND="linear-gradient(90deg,#FF6B9D,#C084FC,#00C8BB)";
+const fFredoka={fontFamily:"'Fredoka One',cursive"};
+const fNunito={fontFamily:"'Nunito',sans-serif"};
+
+function DiffBar({diff,slim=false}){
+  const tier=getTier(diff);
+  const t=TIERS[tier];
+  if(slim)return <div style={{height:4,borderRadius:2,background:"#eee",overflow:"hidden",marginTop:4}}><div style={{height:"100%",width:`${diff}%`,background:t.color,borderRadius:2}}/></div>;
+  return(
+    <div style={{marginTop:6}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}>
+        <span style={{...fNunito,fontSize:12,fontWeight:700,color:t.color}}>{t.emoji} {t.label}</span>
+        <span style={{...fNunito,fontSize:11,color:"#999"}}>Lv.{diff}/100</span>
+      </div>
+      <div style={{height:6,borderRadius:3,background:"#eee",overflow:"hidden"}}><div style={{height:"100%",width:`${diff}%`,background:t.color,borderRadius:3,transition:"width .4s"}}/></div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════
+// PBN CANVAS
+// ═══════════════════════════════════════════════════
+function PBNCanvas({scene}){
+  const [cells,setCells]=useState({});
+  const [selColor,setSelColor]=useState(null);
+  const [won,setWon]=useState(false);
+  const sz=scene.sz;
+  const cellSz=Math.floor(240/sz);
+  const paint=(idx)=>{
+    if(!selColor||scene.flat[idx]===0)return;
+    const nc={...cells,[idx]:selColor};
+    setCells(nc);
+    const allDone=scene.flat.every((z,i)=>z===0||nc[i]);
+    if(allDone)setWon(true);
+  };
+  if(won)return(
+    <div style={{textAlign:"center",padding:24,animation:"pop .4s ease"}}>
+      <div style={{fontSize:60}}>🎉</div>
+      <div style={{...fFredoka,fontSize:24,background:BRAND,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",margin:"8px 0"}}>Amazing Work!</div>
+      <div style={{...fNunito,fontSize:14,color:"#666",marginBottom:16}}>You coloured the whole scene!</div>
+      <button onClick={()=>{setCells({});setSelColor(null);setWon(false);}} style={{...fNunito,fontWeight:800,fontSize:14,padding:"10px 24px",borderRadius:20,border:"none",background:"#FF4757",color:"#fff",cursor:"pointer"}}>Paint Again 🎨</button>
+    </div>
+  );
+  return(
+    <div>
+      <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:12,justifyContent:"center"}}>
+        {scene.pal.map((c,i)=>(
+          <div key={i} onClick={()=>setSelColor(c)} style={{width:32,height:32,borderRadius:"50%",background:c,cursor:"pointer",border:selColor===c?"3px solid #333":"3px solid #fff",boxShadow:"0 2px 6px rgba(0,0,0,.2)",transform:selColor===c?"scale(1.22)":"scale(1)",transition:"transform .15s",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,color:c==='#FFFFFF'||c==='#FFE4EF'||c==='#E8F4FD'||c==='#FFE0C0'?"#333":"#fff"}}>
+            {i+1}
+          </div>
+        ))}
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:`repeat(${sz},${cellSz}px)`,gap:2,margin:"0 auto",width:"fit-content"}}>
+        {scene.flat.map((zone,idx)=>{
+          const filled=cells[idx];
+          const bg=filled||(zone===0?"#f0f0f0":"#fff");
+          return(
+            <div key={idx} onClick={()=>paint(idx)} style={{width:cellSz,height:cellSz,background:bg,border:"1px solid #ddd",borderRadius:2,display:"flex",alignItems:"center",justifyContent:"center",fontSize:Math.max(8,cellSz*.3),fontWeight:700,color:filled?"transparent":"#aaa",cursor:zone===0?"default":"pointer",userSelect:"none"}}>
+              {!filled&&zone!==0?zone:""}
+            </div>
+          );
+        })}
+      </div>
+      {selColor&&<div style={{...fNunito,textAlign:"center",marginTop:8,fontSize:12,color:"#888"}}>Tap cells to paint! 🖌️</div>}
+      {!selColor&&<div style={{...fNunito,textAlign:"center",marginTop:8,fontSize:12,color:"#888"}}>Pick a colour to start! 👆</div>}
+      <button onClick={()=>{setCells({});setSelColor(null);}} style={{...fNunito,display:"block",margin:"12px auto 0",fontWeight:800,fontSize:13,padding:"8px 20px",borderRadius:16,border:"none",background:"#eee",color:"#666",cursor:"pointer"}}>Reset 🔄</button>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════
+// TILE PUZZLE
+// ═══════════════════════════════════════════════════
+function TilePuzzle({pz,onSolve}){
+  const diff=pz.diff;
+  const sz=diff<=25?3:diff<=50?4:5;
+  const total=sz*sz;
+  const maxHints=diff<=50?2:1;
+  const shuffle=useCallback(()=>{
+    const a=Array.from({length:total-1},(_,i)=>i+1);a.push(0);
+    for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+    return a;
+  },[total]);
+  const [tiles,setTiles]=useState(()=>shuffle());
+  const [won,setWon]=useState(false);
+  const [hints,setHints]=useState([]);
+  const [hintsUsed,setHintsUsed]=useState(0);
+  const [showHow,setShowHow]=useState(false);
+  const tileSz=Math.floor(230/sz);
+  const empty=tiles.indexOf(0);
+  const move=(idx)=>{
+    const er=Math.floor(empty/sz),ec=empty%sz,r=Math.floor(idx/sz),c=idx%sz;
+    if(Math.abs(er-r)+Math.abs(ec-c)!==1)return;
+    const nt=[...tiles];[nt[empty],nt[idx]]=[nt[idx],nt[empty]];
+    setTiles(nt);
+    const solved=nt.every((v,i)=>i===total-1?v===0:v===i+1);
+    if(solved){setWon(true);onSolve();}
+  };
+  const getHint=()=>{
+    if(hintsUsed>=maxHints){setHints(["No more hints! You can do it! 💪"]);return;}
+    if(hintsUsed===0){
+      let wrongIdx=-1;
+      for(let i=0;i<total-1;i++){if(tiles[i]!==i+1){wrongIdx=i;break;}}
+      if(wrongIdx===-1){setHints(["Almost solved! Keep going! 🌟"]);return;}
+      const tileVal=tiles[wrongIdx];
+      const correctPos=tileVal-1;
+      const cr=Math.floor(correctPos/sz),cc=correctPos%sz;
+      const wr=Math.floor(wrongIdx/sz),wc=wrongIdx%sz;
+      let dir="";
+      if(cr<wr)dir="up";else if(cr>wr)dir="down";else if(cc<wc)dir="left";else dir="right";
+      setHints([`Tile ${tileVal} needs to go ${dir}! ↕️`]);
+    } else {
+      const er=Math.floor(empty/sz),ec=empty%sz;
+      setHints([...hints,`Empty space is at row ${er+1}, column ${ec+1}! 📍`]);
+    }
+    setHintsUsed(h=>h+1);
+  };
+  const theme=PZ_THEMES.find(t=>t.id===pz.themeId)||PZ_THEMES[0];
+  const emojis=PZ_SETS[pz.themeId]||PZ_SETS.animals;
+  const tileEmoji=TILE_E[(pz.id-1)%25];
+  if(won)return(
+    <div style={{textAlign:"center",padding:32,animation:"pop .4s ease"}}>
+      <div style={{fontSize:64}}>🏆</div>
+      <div style={{...fFredoka,fontSize:24,background:BRAND,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",margin:"8px 0"}}>Puzzle Solved!</div>
+      <div style={{...fNunito,fontSize:14,color:"#666",marginBottom:16}}>You're a puzzle champion! 🎉</div>
+      <button onClick={()=>{setTiles(shuffle());setWon(false);setHints([]);setHintsUsed(0);}} style={{...fNunito,fontWeight:800,fontSize:14,padding:"10px 24px",borderRadius:20,border:"none",background:BRAND,color:"#fff",cursor:"pointer"}}>Play Again 🔄</button>
+    </div>
+  );
+  return(
+    <div>
+      <div style={{display:"grid",gridTemplateColumns:`repeat(${sz},${tileSz}px)`,gap:4,margin:"0 auto 16px",width:"fit-content"}}>
+        {tiles.map((val,idx)=>(
+          <div key={idx} onClick={()=>move(idx)} style={{width:tileSz,height:tileSz,background:val===0?"transparent":theme.bg,border:val===0?"none":`2px solid ${theme.color}`,borderRadius:8,display:"flex",alignItems:"center",justifyContent:"center",fontSize:tileSz*.35,cursor:val===0?"default":"pointer",boxShadow:val===0?"none":"0 2px 6px rgba(0,0,0,.1)",userSelect:"none",transition:"all .15s"}}>
+            {val!==0?tileEmoji:""}
+          </div>
+        ))}
+      </div>
+      <div style={{display:"flex",gap:8,justifyContent:"center",flexWrap:"wrap"}}>
+        <button onClick={()=>{setTiles(shuffle());setHints([]);setHintsUsed(0);}} style={{...fNunito,fontWeight:800,fontSize:13,padding:"8px 16px",borderRadius:16,border:"none",background:"#eee",color:"#555",cursor:"pointer"}}>Reset 🔄</button>
+        <button onClick={getHint} style={{...fNunito,fontWeight:800,fontSize:13,padding:"8px 16px",borderRadius:16,border:"none",background:"#FFF3E0",color:"#F59E0B",cursor:"pointer"}}>Hint 💡 ({maxHints-hintsUsed} left)</button>
+        <button onClick={()=>setShowHow(true)} style={{...fNunito,fontWeight:800,fontSize:13,padding:"8px 16px",borderRadius:16,border:"none",background:"#E3F2FD",color:"#00B4D8",cursor:"pointer"}}>How to Play ❓</button>
+      </div>
+      {hints.map((h,i)=><div key={i} style={{...fNunito,fontSize:13,color:"#666",textAlign:"center",marginTop:8,padding:"8px 16px",background:"#FFF8E1",borderRadius:12}}>{h}</div>)}
+      {showHow&&(
+        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.5)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:999}} onClick={()=>setShowHow(false)}>
+          <div style={{background:"#fff",borderRadius:20,padding:24,maxWidth:300,margin:16}} onClick={e=>e.stopPropagation()}>
+            <div style={{...fFredoka,fontSize:20,textAlign:"center",marginBottom:12}}>How to Play 🧩</div>
+            <div style={{...fNunito,fontSize:13,color:"#555",lineHeight:1.6,marginBottom:16}}>
+              Tap tiles next to the empty space to slide them. Arrange all tiles in order from left to right, top to bottom!
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(3,48px)",gap:4,margin:"0 auto 16px",width:"fit-content"}}>
+              {[1,2,3,4,0,5,7,8,6].map((v,i)=><div key={i} style={{width:48,height:48,background:v===0?"transparent":"#E3F2FD",border:v===0?"none":"2px solid #00B4D8",borderRadius:6,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20}}>{v!==0?"🌟":""}</div>)}
+            </div>
+            <button onClick={()=>setShowHow(false)} style={{...fNunito,fontWeight:800,display:"block",width:"100%",padding:"10px",borderRadius:16,border:"none",background:BRAND,color:"#fff",cursor:"pointer",fontSize:14}}>Got it! ✨</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════
+// MAIN APP
+// ═══════════════════════════════════════════════════
+function App(){
+  const [nav,setNav]=useState("home");
+  const [craftTab,setCraftTab]=useState("diy");
+  const [craftDiff,setCraftDiff]=useState("all");
+  const [selCraft,setSelCraft]=useState(null);
+  const [favs,setFavs]=useState(()=>new Set([21,24,41]));
+  const [colorCat,setColorCat]=useState(null);
+  const [colorSubj,setColorSubj]=useState(null);
+  const [selColor,setSelColor]=useState("#FF6B9D");
+  const [vidCat,setVidCat]=useState("all");
+  const [pzTheme,setPzTheme]=useState("all");
+  const [pzDiff,setPzDiff]=useState("all");
+  const [selPz,setSelPz]=useState(null);
+  const [donePz,setDonePz]=useState(()=>new Set());
+  const [msgs,setMsgs]=useState([{r:"a",t:"Hi! I'm Arty! 🎨✨ Ask me for craft ideas, origami tips, quilling help, drawing tricks, or summer activity ideas. What shall we make today?"}]);
+  const [aiIn,setAiIn]=useState("");
+  const [aiLoad,setAiLoad]=useState(false);
+  const aiEndRef=useRef(null);
+
+  const craftList=useMemo(()=>{
+    let list=CRAFTS.filter(c=>craftTab==="fav"?favs.has(c.id):c.tab===craftTab);
+    if(craftDiff!=="all")list=list.filter(c=>getTier(c.diff)===craftDiff);
+    return list;
+  },[craftTab,craftDiff,favs]);
+
+  const vidList=useMemo(()=>vidCat==="all"?VIDEOS:VIDEOS.filter(v=>v.cat===vidCat),[vidCat]);
+
+  const pzList=useMemo(()=>{
+    let list=[];
+    PZ_THEMES.forEach((theme,ti)=>{
+      for(let lvl=1;lvl<=10;lvl++){
+        const diff=Math.min(100,(lvl+1)*10+Math.round(ti*0.6));
+        list.push({id:ti*10+lvl,themeId:theme.id,level:lvl,diff,emoji:PZ_SETS[theme.id][lvl-1],label:`${theme.label} Lv.${lvl}`,theme});
+      }
+    });
+    if(pzTheme!=="all")list=list.filter(p=>p.themeId===pzTheme);
+    if(pzDiff!=="all")list=list.filter(p=>getTier(p.diff)===pzDiff);
+    return list;
+  },[pzTheme,pzDiff]);
+
+  useEffect(()=>{aiEndRef.current?.scrollIntoView({behavior:"smooth"});},[msgs,aiLoad]);
+
+  const sendAI=async()=>{
+    if(!aiIn.trim()||aiLoad)return;
+    const msg=aiIn.trim();
+    setMsgs(m=>[...m,{r:"u",t:msg}]);
+    setAiIn("");setAiLoad(true);
+    try{
+      const res=await fetch("/api/arty-ai",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:msg})});
+      const data=await res.json();
+      setMsgs(m=>[...m,{r:"a",t:data.reply||"My glitter spilled! Try again! 🎨"}]);
+    }catch{
+      setMsgs(m=>[...m,{r:"a",t:"My glitter spilled! Try again! 🎨"}]);
+    }
+    setAiLoad(false);
+  };
+
+  const goNav=(n)=>{setNav(n);setSelCraft(null);setSelPz(null);if(n==="color"){setColorCat(null);setColorSubj(null);}};
+
+  const TABS=[{id:"home",icon:"🏠",label:"Home"},{id:"color",icon:"🎨",label:"Colour"},{id:"crafts",icon:"✂️",label:"Crafts"},{id:"videos",icon:"📹",label:"Videos"},{id:"puzzles",icon:"🧩",label:"Puzzles"},{id:"ai",icon:"🤖",label:"Arty AI"}];
+
+  const Header=({title})=>(
+    <div className="np" style={{background:BRAND,padding:"14px 16px 12px",position:"sticky",top:0,zIndex:10,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+      <div style={{...fFredoka,fontSize:20,color:"#fff",letterSpacing:.5}}>{title}</div>
+      <div style={{display:"flex",gap:4,fontSize:20}}>
+        {["🌈","🎨","✨"].map((e,i)=><span key={i}>{e}</span>)}
+      </div>
+    </div>
+  );
+
+  const DIFF_BTNS=["all","beginner","explorer","creator","master"];
+
+  // ── HOME ──────────────────────────────────────────
+  const HomeScreen=()=>{
+    const todaysCraft=CRAFTS.find(c=>c.id===21);
+    return(
+      <div className="scr" key="home" style={{height:"calc(100vh - 114px)",overflowY:"auto",paddingBottom:20}}>
+        <Header title="🎉 Arty Party!"/>
+        <div style={{padding:"12px 12px 0"}}>
+          {/* Today's Challenge */}
+          <div onClick={()=>{setNav("crafts");setCraftTab("origami");setSelCraft(todaysCraft);}} style={{background:"linear-gradient(135deg,#FF6B9D,#C084FC)",borderRadius:16,padding:16,marginBottom:12,cursor:"pointer",color:"#fff",boxShadow:"0 4px 16px rgba(255,107,157,.3)"}}>
+            <div style={{...fNunito,fontSize:11,fontWeight:800,opacity:.85,letterSpacing:1,textTransform:"uppercase",marginBottom:4}}>⭐ Today's Challenge</div>
+            <div style={{display:"flex",alignItems:"center",gap:12}}>
+              <div style={{fontSize:40}}>{todaysCraft.emoji}</div>
+              <div>
+                <div style={{...fFredoka,fontSize:18}}>{todaysCraft.name}</div>
+                <div style={{...fNunito,fontSize:12,opacity:.9}}>Origami · {todaysCraft.time} · ⭐ {todaysCraft.diff}/100</div>
+              </div>
+            </div>
+          </div>
+          {/* Hero Banner */}
+          <div style={{background:"linear-gradient(135deg,#FF8C42,#FFD93D)",borderRadius:16,padding:16,marginBottom:12,color:"#fff"}}>
+            <div style={{...fFredoka,fontSize:22,marginBottom:4}}>Summer Adventures! 🌞</div>
+            <div style={{...fNunito,fontSize:13,opacity:.9}}>Crafts, colours, puzzles & more await you this summer! Jump in and start creating! 🎨</div>
+          </div>
+          {/* Stats */}
+          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginBottom:12}}>
+            {[["80","✂️","Crafts"],["34","📹","Videos"],["100","🧩","Puzzles"],["160","🎨","Colours"]].map(([n,e,l])=>(
+              <div key={l} style={{background:"#f8f9ff",borderRadius:12,padding:"10px 4px",textAlign:"center"}}>
+                <div style={{fontSize:18}}>{e}</div>
+                <div style={{...fFredoka,fontSize:18,color:"#FF6B9D"}}>{n}</div>
+                <div style={{...fNunito,fontSize:10,color:"#888",fontWeight:700}}>{l}</div>
+              </div>
+            ))}
+          </div>
+          {/* Adventure Grid */}
+          <div style={{...fFredoka,fontSize:16,color:"#333",marginBottom:8}}>Start Your Adventure! 🚀</div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:8,marginBottom:12}}>
+            {[
+              {icon:"🎨",title:"Colour Zone",desc:"160 characters to colour",nav:"color",bg:"linear-gradient(135deg,#FFE4EF,#F3E5F5)"},
+              {icon:"✂️",title:"Crafts Hub",desc:"80 fun crafts to make",nav:"crafts",bg:"linear-gradient(135deg,#E3F2FD,#E8F5E9)"},
+              {icon:"📹",title:"Watch & Learn",desc:"34 kid-safe videos",nav:"videos",bg:"linear-gradient(135deg,#FFF3E0,#FFF8E1)"},
+              {icon:"🧩",title:"Puzzle World",desc:"100 tile puzzles",nav:"puzzles",bg:"linear-gradient(135deg,#EDE9FE,#E3F2FD)"},
+              {icon:"🤖",title:"Arty AI",desc:"Your craft helper",nav:"ai",bg:"linear-gradient(135deg,#FFE4EF,#EDE9FE)"},
+              {icon:"⭐",title:"Today's Pick",desc:"Lucky Stars origami",nav:"crafts",bg:"linear-gradient(135deg,#FFF8E1,#FFF3E0)"},
+            ].map(item=>(
+              <div key={item.nav+item.title} onClick={()=>goNav(item.nav)} style={{background:item.bg,borderRadius:14,padding:14,cursor:"pointer",transition:"transform .15s"}} onMouseDown={e=>e.currentTarget.style.transform="scale(.95)"} onMouseUp={e=>e.currentTarget.style.transform="scale(1)"} onMouseLeave={e=>e.currentTarget.style.transform="scale(1)"}>
+                <div style={{fontSize:28,marginBottom:4}}>{item.icon}</div>
+                <div style={{...fFredoka,fontSize:14,color:"#333"}}>{item.title}</div>
+                <div style={{...fNunito,fontSize:11,color:"#666"}}>{item.desc}</div>
+              </div>
+            ))}
+          </div>
+          {/* Colour Themes */}
+          <div style={{...fFredoka,fontSize:16,color:"#333",marginBottom:8}}>Colour Themes 🎨</div>
+          <div style={{display:"flex",gap:8,overflowX:"auto",paddingBottom:8,marginBottom:16}}>
+            {COLOR_CATS.map(cat=>(
+              <div key={cat.id} onClick={()=>{setColorCat(cat.id);goNav("color");}} style={{flexShrink:0,background:cat.bg,borderRadius:12,padding:"10px 14px",cursor:"pointer",textAlign:"center",minWidth:80}}>
+                <div style={{fontSize:24}}>{cat.emoji}</div>
+                <div style={{...fFredoka,fontSize:11,color:cat.color,marginTop:2}}>{cat.label}</div>
+              </div>
+            ))}
+          </div>
+          {/* Credits */}
+          <div style={{textAlign:"center",padding:"16px 0 8px",borderTop:"1px solid #eee"}}>
+            <div style={{...fFredoka,fontSize:16,background:BRAND,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>Arty Party 🎨</div>
+            <div style={{...fNunito,fontSize:11,color:"#999",marginTop:4}}>Developed by Aarohi Anisha Mogra & Ankit Mogra</div>
+            <div style={{...fNunito,fontSize:10,color:"#bbb",marginTop:2}}>© 2025 All Rights Reserved</div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // ── COLOUR ZONE ───────────────────────────────────
+  const ColourScreen=()=>{
+    const cat=COLOR_CATS.find(c=>c.id===colorCat);
+    const subj=cat?.subjects?.find(s=>s.id===colorSubj);
+    if(subj&&cat){
+      const idx=cat.subjects.indexOf(subj);
+      const next=cat.subjects[(idx+1)%cat.subjects.length];
+      return(
+        <div className="scr" key={colorSubj} style={{height:"calc(100vh - 114px)",overflowY:"auto",paddingBottom:20}}>
+          <Header title="🎨 Colour Zone"/>
+          <div style={{padding:12}}>
+            <button onClick={()=>setColorSubj(null)} style={{...fNunito,fontWeight:800,fontSize:13,padding:"8px 16px",borderRadius:16,border:"none",background:"#f0f0f0",cursor:"pointer",marginBottom:12}}>← Back</button>
+            <div style={{background:cat.bg,borderRadius:20,padding:20,textAlign:"center",marginBottom:16}}>
+              <div style={{fontSize:110,lineHeight:1.1,marginBottom:8}}>{subj.emoji}</div>
+              <div style={{...fFredoka,fontSize:22,color:cat.color}}>{subj.name}</div>
+              <div style={{...fNunito,fontSize:13,color:"#888"}}>from {subj.from}</div>
+            </div>
+            <div style={{...fFredoka,fontSize:14,color:"#555",marginBottom:8}}>Choose a Colour 🎨</div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:8,marginBottom:16}}>
+              {PALETTE.map(c=>(
+                <div key={c} onClick={()=>setSelColor(c)} style={{height:44,borderRadius:10,background:c,cursor:"pointer",border:selColor===c?"3px solid #333":"3px solid transparent",boxShadow:"0 2px 6px rgba(0,0,0,.12)",transition:"transform .1s",transform:selColor===c?"scale(1.1)":"scale(1)"}}/>
+              ))}
+            </div>
+            <div style={{display:"flex",gap:8}}>
+              <button onClick={()=>setColorSubj(next.id)} style={{...fNunito,flex:1,fontWeight:800,fontSize:14,padding:"12px",borderRadius:16,border:"none",background:BRAND,color:"#fff",cursor:"pointer"}}>Next Character ➡️</button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    if(cat){
+      return(
+        <div className="scr" key={colorCat} style={{height:"calc(100vh - 114px)",overflowY:"auto",paddingBottom:20}}>
+          <Header title="🎨 Colour Zone"/>
+          <div style={{padding:12}}>
+            <button onClick={()=>setColorCat(null)} style={{...fNunito,fontWeight:800,fontSize:13,padding:"8px 16px",borderRadius:16,border:"none",background:"#f0f0f0",cursor:"pointer",marginBottom:12}}>← Back</button>
+            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16,background:cat.bg,padding:12,borderRadius:14}}>
+              <span style={{fontSize:28}}>{cat.emoji}</span>
+              <div>
+                <div style={{...fFredoka,fontSize:16,color:cat.color}}>{cat.label}</div>
+                <div style={{...fNunito,fontSize:12,color:"#888"}}>{cat.desc}</div>
+              </div>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8}}>
+              {cat.subjects.map(s=>(
+                <div key={s.id} onClick={()=>setColorSubj(s.id)} style={{background:"#f8f9ff",borderRadius:12,padding:10,textAlign:"center",cursor:"pointer",transition:"transform .15s"}} onMouseDown={e=>e.currentTarget.style.transform="scale(.93)"} onMouseUp={e=>e.currentTarget.style.transform="scale(1)"} onMouseLeave={e=>e.currentTarget.style.transform="scale(1)"}>
+                  <div style={{fontSize:32,marginBottom:4}}>{s.emoji}</div>
+                  <div style={{...fFredoka,fontSize:11,color:"#444"}}>{s.name}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return(
+      <div className="scr" key="color-home" style={{height:"calc(100vh - 114px)",overflowY:"auto",paddingBottom:20}}>
+        <Header title="🎨 Colour Zone"/>
+        <div style={{padding:12}}>
+          <div style={{...fFredoka,fontSize:15,color:"#555",marginBottom:12}}>Choose a Category 🌈</div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:10}}>
+            {COLOR_CATS.map(cat=>(
+              <div key={cat.id} onClick={()=>setColorCat(cat.id)} style={{background:cat.bg,borderRadius:16,padding:16,cursor:"pointer",transition:"transform .15s"}} onMouseDown={e=>e.currentTarget.style.transform="scale(.95)"} onMouseUp={e=>e.currentTarget.style.transform="scale(1)"} onMouseLeave={e=>e.currentTarget.style.transform="scale(1)"}>
+                <div style={{fontSize:32,marginBottom:6}}>{cat.emoji}</div>
+                <div style={{...fFredoka,fontSize:14,color:cat.color}}>{cat.label}</div>
+                <div style={{...fNunito,fontSize:11,color:"#888",marginTop:2}}>{cat.subjects.length} characters</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // ── CRAFTS HUB ────────────────────────────────────
+  const CraftsScreen=()=>{
+    if(selCraft){
+      const pbnScene=PBN_SCENES[selCraft.id];
+      const tier=getTier(selCraft.diff);
+      const t=TIERS[tier];
+      return(
+        <div className="scr" key={"craft-"+selCraft.id} style={{height:"calc(100vh - 114px)",overflowY:"auto",paddingBottom:20}}>
+          <Header title="✂️ Crafts Hub"/>
+          <div style={{padding:12}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+              <button onClick={()=>setSelCraft(null)} style={{...fNunito,fontWeight:800,fontSize:13,padding:"8px 16px",borderRadius:16,border:"none",background:"#f0f0f0",cursor:"pointer"}}>← Back</button>
+              <button onClick={()=>setFavs(f=>{const nf=new Set(f);nf.has(selCraft.id)?nf.delete(selCraft.id):nf.add(selCraft.id);return nf;})} style={{fontSize:22,background:"none",border:"none",cursor:"pointer"}}>{favs.has(selCraft.id)?"❤️":"🤍"}</button>
+            </div>
+            <div style={{background:selCraft.bg,borderRadius:20,padding:20,textAlign:"center",marginBottom:16}}>
+              <div style={{fontSize:72,marginBottom:8}}>{selCraft.emoji}</div>
+              <div style={{...fFredoka,fontSize:22,color:"#333"}}>{selCraft.name}</div>
+              <div style={{display:"flex",justifyContent:"center",gap:8,marginTop:8,flexWrap:"wrap"}}>
+                <span style={{...fNunito,fontSize:12,fontWeight:700,background:"#fff",padding:"4px 10px",borderRadius:20,color:"#666"}}>⏱ {selCraft.time}</span>
+                <span style={{...fNunito,fontSize:12,fontWeight:700,background:t.color,padding:"4px 10px",borderRadius:20,color:"#fff"}}>{t.emoji} {t.label}</span>
+                <span style={{...fNunito,fontSize:12,fontWeight:700,background:"#fff",padding:"4px 10px",borderRadius:20,color:"#FF6B9D"}}>❤️ {selCraft.likes}</span>
+              </div>
+              <DiffBar diff={selCraft.diff}/>
+            </div>
+            {pbnScene?(
+              <div>
+                <div style={{...fFredoka,fontSize:16,color:"#333",marginBottom:12}}>🎨 Paint by Numbers</div>
+                <PBNCanvas scene={pbnScene}/>
+              </div>
+            ):(
+              <div>
+                <div style={{background:"#f0f9ff",borderRadius:16,padding:14,marginBottom:16}}>
+                  <div style={{...fFredoka,fontSize:14,color:"#00B4D8",marginBottom:8}}>🎁 What You'll Make</div>
+                  <div style={{display:"flex",alignItems:"center",gap:10}}>
+                    <span style={{fontSize:32}}>{selCraft.outEmoji}</span>
+                    <span style={{...fNunito,fontSize:13,color:"#555"}}>{selCraft.outDesc}</span>
+                  </div>
+                </div>
+                <div style={{...fFredoka,fontSize:14,color:"#333",marginBottom:8}}>📦 You'll Need</div>
+                {selCraft.materials.map((m,i)=>(
+                  <div key={i} style={{...fNunito,fontSize:13,color:"#555",padding:"6px 0",borderBottom:"1px solid #f0f0f0",display:"flex",alignItems:"center",gap:8}}>
+                    <span style={{color:"#4ADE80",fontWeight:800}}>✓</span>{m}
+                  </div>
+                ))}
+                <div style={{...fFredoka,fontSize:14,color:"#333",margin:"16px 0 8px"}}>📋 Steps</div>
+                {selCraft.steps.map((s,i)=>(
+                  <div key={i} style={{display:"flex",gap:10,marginBottom:10,alignItems:"flex-start"}}>
+                    <div style={{...fFredoka,minWidth:28,height:28,borderRadius:"50%",background:BRAND,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,flexShrink:0}}>{i+1}</div>
+                    <div style={{...fNunito,fontSize:13,color:"#555",paddingTop:4}}>{s}</div>
+                  </div>
+                ))}
+                <div style={{background:"linear-gradient(135deg,#FFE4EF,#EDE9FE)",borderRadius:16,padding:14,marginTop:16}}>
+                  <div style={{...fFredoka,fontSize:14,color:"#FF6B9D",marginBottom:4}}>🤖 Arty's Tip</div>
+                  <div style={{...fNunito,fontSize:13,color:"#666"}}>Take your time and enjoy the process! Every craft looks amazing when made with love! ✨</div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+    const CRAFT_TABS=[{id:"diy",label:"DIY",emoji:"✂️"},{id:"origami",label:"Origami",emoji:"🦢"},{id:"quilling",label:"Quilling",emoji:"🌀"},{id:"pbn",label:"Paint by No.",emoji:"🖌️"},{id:"fav",label:"Saved",emoji:"❤️"}];
+    return(
+      <div className="scr" key="crafts-list" style={{height:"calc(100vh - 114px)",overflowY:"auto",paddingBottom:20}}>
+        <Header title="✂️ Crafts Hub"/>
+        <div style={{padding:"8px 12px 0"}}>
+          <div style={{display:"flex",gap:6,overflowX:"auto",paddingBottom:8}}>
+            {CRAFT_TABS.map(t=>(
+              <button key={t.id} onClick={()=>setCraftTab(t.id)} style={{...fNunito,fontWeight:800,fontSize:12,padding:"8px 14px",borderRadius:20,border:"none",background:craftTab===t.id?BRAND:craftTab===t.id?"":"#f0f0f0",color:craftTab===t.id?"#fff":"#666",cursor:"pointer",flexShrink:0,backgroundImage:craftTab===t.id?BRAND:"none"}}>{t.emoji} {t.label}</button>
+            ))}
+          </div>
+          <div style={{display:"flex",gap:6,overflowX:"auto",padding:"4px 0 8px"}}>
+            {DIFF_BTNS.map(d=>{
+              const t=d!=="all"?TIERS[d]:null;
+              return<button key={d} onClick={()=>setCraftDiff(d)} style={{...fNunito,fontWeight:800,fontSize:11,padding:"6px 12px",borderRadius:20,border:"none",background:craftDiff===d?(t?t.color:"#333"):"#f0f0f0",color:craftDiff===d?"#fff":"#666",cursor:"pointer",flexShrink:0,whiteSpace:"nowrap"}}>{t?`${t.emoji} ${t.label}`:"All"}</button>;
+            })}
+          </div>
+          {craftList.length===0?<div style={{textAlign:"center",padding:32}}><div style={{fontSize:40}}>⭐</div><div style={{...fFredoka,fontSize:16,color:"#999",marginTop:8}}>None here!</div><div style={{...fNunito,fontSize:13,color:"#bbb",marginTop:4}}>Try a different filter!</div></div>:
+          craftList.map(craft=>(
+            <div key={craft.id} onClick={()=>setSelCraft(craft)} style={{background:craft.bg,borderRadius:16,padding:14,marginBottom:10,cursor:"pointer",transition:"transform .15s"}} onMouseDown={e=>e.currentTarget.style.transform="scale(.98)"} onMouseUp={e=>e.currentTarget.style.transform="scale(1)"} onMouseLeave={e=>e.currentTarget.style.transform="scale(1)"}>
+              <div style={{display:"flex",gap:12,alignItems:"flex-start"}}>
+                <div style={{fontSize:42,flexShrink:0}}>{craft.emoji}</div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
+                    <div style={{...fFredoka,fontSize:15,color:"#333",flex:1}}>{craft.name}</div>
+                    <button onClick={e=>{e.stopPropagation();setFavs(f=>{const nf=new Set(f);nf.has(craft.id)?nf.delete(craft.id):nf.add(craft.id);return nf;});}} style={{fontSize:16,background:"none",border:"none",cursor:"pointer",padding:2}}>{favs.has(craft.id)?"❤️":"🤍"}</button>
+                  </div>
+                  <div style={{...fNunito,fontSize:12,color:"#777",margin:"2px 0 4px"}}>{craft.outDesc.slice(0,50)}{craft.outDesc.length>50?"…":""}</div>
+                  <DiffBar diff={craft.diff} slim/>
+                  <div style={{display:"flex",gap:8,marginTop:6}}>
+                    <span style={{...fNunito,fontSize:11,color:"#888"}}>⏱ {craft.time}</span>
+                    <span style={{...fNunito,fontSize:11,color:"#FF6B9D"}}>❤️ {craft.likes}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  // ── VIDEOS ────────────────────────────────────────
+  const VideosScreen=()=>(
+    <div className="scr" key="videos" style={{height:"calc(100vh - 114px)",overflowY:"auto",paddingBottom:20}}>
+      <Header title="📹 Watch & Learn"/>
+      <div style={{padding:"8px 12px 0"}}>
+        <div style={{display:"flex",gap:6,overflowX:"auto",paddingBottom:8}}>
+          {VID_CATS.map(vc=>(
+            <button key={vc.id} onClick={()=>setVidCat(vc.id)} style={{...fNunito,fontWeight:800,fontSize:12,padding:"8px 14px",borderRadius:20,border:"none",backgroundImage:vidCat===vc.id?BRAND:"none",background:vidCat===vc.id?"":"#f0f0f0",color:vidCat===vc.id?"#fff":"#666",cursor:"pointer",flexShrink:0}}>{vc.emoji} {vc.label}</button>
+          ))}
+        </div>
+        {vidList.map(v=>(
+          <a key={v.id} href={v.url} target="_blank" rel="noopener noreferrer" style={{textDecoration:"none",display:"block",marginBottom:10}}>
+            <div style={{background:"#fff",borderRadius:16,overflow:"hidden",boxShadow:"0 2px 10px rgba(0,0,0,.06)"}}>
+              <div style={{background:"#1a1a2e",height:90,display:"flex",alignItems:"center",justifyContent:"center",position:"relative"}}>
+                <span style={{fontSize:48}}>{v.emoji}</span>
+                <div style={{position:"absolute",bottom:8,right:8,background:"#FF0000",borderRadius:"50%",width:28,height:28,display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,color:"#fff"}}>▶</div>
+                <div style={{position:"absolute",top:8,left:8,background:"#4ADE80",borderRadius:20,padding:"2px 8px",fontSize:11,fontWeight:700,color:"#fff",fontFamily:"Nunito"}}>Ages {v.age}</div>
+              </div>
+              <div style={{padding:"10px 12px"}}>
+                <div style={{...fFredoka,fontSize:14,color:"#333",marginBottom:2}}>{v.title}</div>
+                <div style={{...fNunito,fontSize:11,color:"#888",marginBottom:6}}>{v.ch}</div>
+                <DiffBar diff={v.diff} slim/>
+                <div style={{display:"flex",gap:8,marginTop:6}}>
+                  <span style={{...fNunito,fontSize:11,color:"#666"}}>⏱ {v.dur}</span>
+                  <span style={{...fNunito,fontSize:11,color:"#888"}}>👁 {v.views}</span>
+                </div>
+              </div>
+            </div>
+          </a>
+        ))}
+        <div style={{...fNunito,fontSize:12,color:"#888",textAlign:"center",padding:"12px 0"}}>{vidList.length} videos · All 100% kid-safe ✅ · Ages 4–12</div>
+      </div>
+    </div>
+  );
+
+  // ── PUZZLES ───────────────────────────────────────
+  const PuzzlesScreen=()=>{
+    if(selPz){
+      return(
+        <div className="scr" key={"pz-"+selPz.id} style={{height:"calc(100vh - 114px)",overflowY:"auto",paddingBottom:20}}>
+          <Header title="🧩 Puzzle World"/>
+          <div style={{padding:12}}>
+            <button onClick={()=>setSelPz(null)} style={{...fNunito,fontWeight:800,fontSize:13,padding:"8px 16px",borderRadius:16,border:"none",background:"#f0f0f0",cursor:"pointer",marginBottom:12}}>← Back</button>
+            <div style={{background:selPz.theme.bg,borderRadius:20,padding:16,textAlign:"center",marginBottom:16}}>
+              <div style={{fontSize:48,marginBottom:4}}>{selPz.emoji}</div>
+              <div style={{...fFredoka,fontSize:20,color:selPz.theme.color}}>{selPz.label}</div>
+              <DiffBar diff={selPz.diff}/>
+            </div>
+            <TilePuzzle pz={selPz} onSolve={()=>setDonePz(d=>{const nd=new Set(d);nd.add(selPz.id);return nd;})}/>
+          </div>
+        </div>
+      );
+    }
+    return(
+      <div className="scr" key="puzzles-list" style={{height:"calc(100vh - 114px)",overflowY:"auto",paddingBottom:20}}>
+        <Header title="🧩 Puzzle World"/>
+        <div style={{padding:"8px 12px 0"}}>
+          <div style={{...fNunito,fontSize:13,fontWeight:700,color:"#888",textAlign:"center",marginBottom:8}}>{pzList.length} puzzles · 🏆 {donePz.size} solved!</div>
+          <div style={{display:"flex",gap:6,overflowX:"auto",paddingBottom:6}}>
+            <button onClick={()=>setPzTheme("all")} style={{...fNunito,fontWeight:800,fontSize:11,padding:"6px 12px",borderRadius:20,border:"none",background:pzTheme==="all"?"#333":"#f0f0f0",color:pzTheme==="all"?"#fff":"#666",cursor:"pointer",flexShrink:0}}>All</button>
+            {PZ_THEMES.map(t=>(
+              <button key={t.id} onClick={()=>setPzTheme(t.id)} style={{...fNunito,fontWeight:800,fontSize:11,padding:"6px 12px",borderRadius:20,border:"none",background:pzTheme===t.id?t.color:"#f0f0f0",color:pzTheme===t.id?"#fff":"#666",cursor:"pointer",flexShrink:0}}>{t.emoji} {t.label}</button>
+            ))}
+          </div>
+          <div style={{display:"flex",gap:6,overflowX:"auto",padding:"4px 0 8px"}}>
+            {DIFF_BTNS.map(d=>{
+              const t=d!=="all"?TIERS[d]:null;
+              return<button key={d} onClick={()=>setPzDiff(d)} style={{...fNunito,fontWeight:800,fontSize:11,padding:"6px 12px",borderRadius:20,border:"none",background:pzDiff===d?(t?t.color:"#333"):"#f0f0f0",color:pzDiff===d?"#fff":"#666",cursor:"pointer",flexShrink:0,whiteSpace:"nowrap"}}>{t?`${t.emoji} ${t.label}`:"All"}</button>;
+            })}
+          </div>
+          {pzList.length===0?<div style={{textAlign:"center",padding:32}}><div style={{fontSize:40}}>⭐</div><div style={{...fFredoka,fontSize:16,color:"#999",marginTop:8}}>None here!</div></div>:
+          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8}}>
+            {pzList.map(pz=>{
+              const solved=donePz.has(pz.id);
+              return(
+                <div key={pz.id} onClick={()=>setSelPz(pz)} style={{background:solved?"#E8F5E9":pz.theme.bg,borderRadius:14,padding:12,cursor:"pointer",textAlign:"center",border:solved?"2px solid #4ADE80":"2px solid transparent",position:"relative",transition:"transform .15s"}} onMouseDown={e=>e.currentTarget.style.transform="scale(.93)"} onMouseUp={e=>e.currentTarget.style.transform="scale(1)"} onMouseLeave={e=>e.currentTarget.style.transform="scale(1)"}>
+                  {solved&&<div style={{position:"absolute",top:4,right:4,fontSize:14}}>✅</div>}
+                  <div style={{fontSize:28,marginBottom:4}}>{pz.emoji}</div>
+                  <div style={{...fFredoka,fontSize:11,color:pz.theme.color,lineHeight:1.2}}>{pz.theme.label}</div>
+                  <div style={{...fNunito,fontSize:10,color:"#888",marginTop:2}}>Lv.{pz.level}</div>
+                  <DiffBar diff={pz.diff} slim/>
+                </div>
+              );
+            })}
+          </div>}
+        </div>
+      </div>
+    );
+  };
+
+  // ── ARTY AI ───────────────────────────────────────
+  const AIScreen=()=>{
+    const PROMPTS=["Give me an easy craft idea! 🎨","How do I make origami? 🦢","What can I make with paper? 📄","Quilling tips for beginners! 🌀","Draw a cute animal with me! 🐶","Summer craft ideas please! ☀️"];
+    return(
+      <div className="scr" key="ai" style={{height:"calc(100vh - 114px)",display:"flex",flexDirection:"column"}}>
+        <Header title="🤖 Arty AI"/>
+        <div style={{flex:1,overflowY:"auto",padding:"12px 12px 0"}}>
+          {msgs.map((m,i)=>(
+            <div key={i} style={{display:"flex",justifyContent:m.r==="u"?"flex-end":"flex-start",marginBottom:10}}>
+              {m.r==="a"&&<div style={{fontSize:24,marginRight:6,alignSelf:"flex-end"}}>🤖</div>}
+              <div style={{...fNunito,fontSize:13,fontWeight:600,maxWidth:"78%",padding:"10px 14px",borderRadius:m.r==="u"?"18px 18px 4px 18px":"18px 18px 18px 4px",background:m.r==="u"?BRAND:"#f0f4ff",color:m.r==="u"?"#fff":"#333",lineHeight:1.5,backgroundImage:m.r==="u"?BRAND:"none"}}>{m.t}</div>
+            </div>
+          ))}
+          {aiLoad&&<div style={{display:"flex",gap:6,padding:"8px 12px",alignItems:"center"}}>
+            <div style={{fontSize:24}}>🤖</div>
+            {[0,1,2].map(i=><div key={i} style={{width:8,height:8,borderRadius:"50%",background:"#C084FC",animation:`bounce 1s ease ${i*.2}s infinite`}}/>)}
+          </div>}
+          {msgs.length<=1&&(
+            <div style={{padding:"8px 0"}}>
+              <div style={{...fNunito,fontSize:12,color:"#aaa",marginBottom:8}}>Try asking:</div>
+              <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+                {PROMPTS.map((p,i)=>(
+                  <button key={i} onClick={()=>setAiIn(p)} style={{...fNunito,fontWeight:700,fontSize:12,padding:"8px 12px",borderRadius:20,border:"2px solid #EDE9FE",background:"#f9f0ff",color:"#C084FC",cursor:"pointer"}}>{p}</button>
+                ))}
+              </div>
+            </div>
+          )}
+          <div ref={aiEndRef}/>
+        </div>
+        <div style={{padding:12,borderTop:"1px solid #f0f0f0"}}>
+          <div style={{...fNunito,fontSize:10,color:"#bbb",textAlign:"center",marginBottom:6}}>Powered by Claude ✨</div>
+          <div style={{display:"flex",gap:8}}>
+            <input value={aiIn} onChange={e=>setAiIn(e.target.value)} onKeyDown={e=>e.key==="Enter"&&sendAI()} placeholder="Ask Arty anything crafty! 🎨" style={{...fNunito,flex:1,padding:"12px 16px",borderRadius:24,border:"2px solid #EDE9FE",fontSize:14,outline:"none",fontWeight:600}}/>
+            <button onClick={sendAI} disabled={aiLoad||!aiIn.trim()} style={{...fNunito,width:46,height:46,borderRadius:"50%",border:"none",backgroundImage:BRAND,background:BRAND,color:"#fff",fontSize:18,cursor:"pointer",opacity:aiLoad||!aiIn.trim()?.45:1,flexShrink:0}}>✈️</button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const screens={home:<HomeScreen/>,color:<ColourScreen/>,crafts:<CraftsScreen/>,videos:<VideosScreen/>,puzzles:<PuzzlesScreen/>,ai:<AIScreen/>};
+
+  return(
+    <div style={{height:"100vh",display:"flex",flexDirection:"column",overflow:"hidden"}}>
+      <div style={{flex:1,overflow:"hidden"}} key={nav}>
+        {screens[nav]}
+      </div>
+      {/* Bottom Nav */}
+      <div className="np" style={{display:"flex",background:"#fff",borderTop:"1px solid #f0f0f0",padding:"8px 0 env(safe-area-inset-bottom,8px)",position:"relative",zIndex:10}}>
+        {TABS.map(tab=>{
+          const active=nav===tab.id;
+          return(
+            <button key={tab.id} onClick={()=>goNav(tab.id)} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:2,background:"none",border:"none",cursor:"pointer",padding:"4px 2px",transform:active?"scale(1.1)":"scale(1)",transition:"transform .15s"}}>
+              <span style={{fontSize:20,filter:active?"none":"grayscale(.3)",opacity:active?1:.55}}>{tab.icon}</span>
+              <span style={{...fNunito,fontSize:9,fontWeight:800,color:active?"#FF6B9D":"#bbb"}}>{tab.label}</span>
+              {active&&<div style={{width:4,height:4,borderRadius:"50%",background:"#FF6B9D"}}/>}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>

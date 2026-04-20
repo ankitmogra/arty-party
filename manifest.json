@@ -1,0 +1,22 @@
+{
+  "name": "Arty Party",
+  "short_name": "Arty Party",
+  "description": "Summer holiday art & craft adventures for kids!",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#FF6B9D",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://api.dicebear.com/7.x/fun-emoji/svg?seed=artyparty&scale=80&backgroundColor=FF6B9D",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "https://api.dicebear.com/7.x/fun-emoji/svg?seed=artyparty&scale=80&backgroundColor=FF6B9D",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
